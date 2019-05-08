@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/andreluzz/go-sql-builder/builder"
+	"github.com/agile-work/srv-shared/sql-builder/builder"
 	"github.com/stretchr/testify/assert"
 )
 

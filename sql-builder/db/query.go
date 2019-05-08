@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/andreluzz/go-sql-builder/builder"
+	"github.com/agile-work/srv-shared/sql-builder/builder"
 )
 
 type join struct {

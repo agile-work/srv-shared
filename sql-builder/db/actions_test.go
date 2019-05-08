@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/BurntSushi/toml"
-	"github.com/andreluzz/go-sql-builder/builder"
+	"github.com/agile-work/srv-shared/sql-builder/builder"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
