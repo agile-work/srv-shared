@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -14,7 +13,6 @@ import (
 func QueryStruct(statement builder.Builder, model interface{}) error {
 	query := builder.NewQuery()
 	statement.Prepare(query)
-	fmt.Println(query.String())
 	rows, err := db.Query(query.String(), query.Value()...)
 	if err != nil {
 		// TODO: log query and values when executing query generates error
@@ -31,7 +29,6 @@ func LoadStruct(table string, model interface{}, conditions builder.Builder) err
 	if err != nil {
 		return err
 	}
-	fmt.Println(query)
 	rows, err := db.Query(query, values...)
 	if err != nil {
 		// TODO: log query and values when executing query generates error
