@@ -31,7 +31,7 @@ func Or(cond ...Builder) Builder {
 	})
 }
 
-//GreaterThen greater then condition
+// GreaterThen greater then condition
 func GreaterThen(column string, value interface{}) Builder {
 	return PrepareFunc(func(q Query) error {
 		q.WriteString(column)
@@ -41,7 +41,7 @@ func GreaterThen(column string, value interface{}) Builder {
 	})
 }
 
-//LowerThen lower then condition
+// LowerThen lower then condition
 func LowerThen(column string, value interface{}) Builder {
 	return PrepareFunc(func(q Query) error {
 		q.WriteString(column)
@@ -51,7 +51,7 @@ func LowerThen(column string, value interface{}) Builder {
 	})
 }
 
-//GreaterOrEqual greater or equal condition
+// GreaterOrEqual greater or equal condition
 func GreaterOrEqual(column string, value interface{}) Builder {
 	return PrepareFunc(func(q Query) error {
 		q.WriteString(column)
@@ -61,7 +61,7 @@ func GreaterOrEqual(column string, value interface{}) Builder {
 	})
 }
 
-//LowerOrEqual lower or equal condition
+// LowerOrEqual lower or equal condition
 func LowerOrEqual(column string, value interface{}) Builder {
 	return PrepareFunc(func(q Query) error {
 		q.WriteString(column)
@@ -86,7 +86,7 @@ func Equal(column string, value interface{}) Builder {
 	})
 }
 
-//NotEqual creates a not equal comparison
+// NotEqual creates a not equal comparison
 func NotEqual(column string, value interface{}) Builder {
 	return PrepareFunc(func(q Query) error {
 		if value == nil {

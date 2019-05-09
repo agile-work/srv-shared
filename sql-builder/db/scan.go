@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-//StructScan write rows data to struct array or struct
+// StructScan write rows data to struct array or struct
 func StructScan(rows *sql.Rows, obj interface{}) error {
 
 	cols, _ := rows.Columns()

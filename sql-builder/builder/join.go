@@ -1,6 +1,6 @@
 package builder
 
-//Join add the relationship to another table
+// Join add the relationship to another table
 func join(table, on string) Builder {
 	return PrepareFunc(func(q Query) error {
 		q.WriteString(" JOIN ")

@@ -10,7 +10,7 @@ import (
 
 var db *sql.DB
 
-//Connect connects to the database
+// Connect connects to the database
 func Connect(host string, port int, user, password, dbname string, sslmode bool) error {
 
 	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s", host, port, user, password, dbname)
@@ -32,7 +32,7 @@ func Connect(host string, port int, user, password, dbname string, sslmode bool)
 	return nil
 }
 
-//Close database connection
+// Close database connection
 func Close() {
 	db.Close()
 }

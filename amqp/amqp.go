@@ -9,7 +9,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-//Queue represents a queue on the system
+// Queue represents a queue on the system
 type Queue struct {
 	name    string
 	durable bool
@@ -17,7 +17,7 @@ type Queue struct {
 	isReady bool
 }
 
-//Message represents items in the queue
+// Message represents items in the queue
 type Message struct {
 	Queue      string
 	Sender     string
@@ -27,30 +27,30 @@ type Message struct {
 	CreatedAt  time.Time
 }
 
-//Parse returns a message from a byte array
+// Parse returns a message from a byte array
 func Parse(body []byte) *Message {
 	m := &Message{}
 	json.Unmarshal(body, m)
 	return m
 }
 
-//Get returns message parameters by key
+// Get returns message parameters by key
 func (m *Message) Get(key string) interface{} {
 	return m.Parameters[key]
 }
 
-//Set returns message parameters by key
+// Set returns message parameters by key
 func (m *Message) Set(key string, value interface{}) {
 	m.Parameters[key] = value
 }
 
-//Bytes returns message byte array
+// Bytes returns message byte array
 func (m *Message) Bytes() []byte {
 	b, _ := json.Marshal(m)
 	return b
 }
 
-//Push to the queue without checking for confirmation.
+// Push to the queue without checking for confirmation.
 func (queue *Queue) Push(message Message) error {
 	if !queue.isReady {
 		return errors.New("Queue not ready")
@@ -149,7 +149,7 @@ func connect(addr string) error {
 	return nil
 }
 
-//Close connection and all channels
+// Close connection and all channels
 func Close() {
 	for _, q := range queuesPool {
 		q.close()

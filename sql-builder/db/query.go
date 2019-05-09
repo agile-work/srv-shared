@@ -35,15 +35,15 @@ func parseSelectStruct(table, alias string, obj interface{}, embedded bool) ([]s
 	for i := 0; i < element.NumField(); i++ {
 		tag := element.Field(i).Tag
 		if tag.Get("sql") != "" && tag.Get("table") == "" && tag.Get("select") != "false" {
-			columnName := fmt.Sprintf("%s.%s as %s", table, tag.Get("sql"), tag.Get("json"))
+			columnName := fmt.Sprintf("%s.%s AS %s", table, tag.Get("sql"), tag.Get("json"))
 			if embedded {
-				columnName = fmt.Sprintf("%s.%s as %s__%s", alias, tag.Get("sql"), alias, tag.Get("json"))
+				columnName = fmt.Sprintf("%s.%s AS %s__%s", alias, tag.Get("sql"), alias, tag.Get("json"))
 			}
 			fields = append(fields, columnName)
 		} else if tag.Get("sql") != "" && tag.Get("table") != "" {
-			columnName := fmt.Sprintf("%s.%s as %s", tag.Get("alias"), tag.Get("sql"), tag.Get("json"))
+			columnName := fmt.Sprintf("%s.%s AS %s", tag.Get("alias"), tag.Get("sql"), tag.Get("json"))
 			if embedded {
-				columnName = fmt.Sprintf("%s_%s.%s as %s__%s", alias, tag.Get("alias"), tag.Get("sql"), alias, tag.Get("json"))
+				columnName = fmt.Sprintf("%s_%s.%s AS %s__%s", alias, tag.Get("alias"), tag.Get("sql"), alias, tag.Get("json"))
 			}
 			fields = append(fields, columnName)
 			joinTable := fmt.Sprintf("%s %s", tag.Get("table"), tag.Get("alias"))
@@ -72,8 +72,8 @@ func parseSelectStruct(table, alias string, obj interface{}, embedded bool) ([]s
 	return fields, joins, nil
 }
 
-//StructSelectQuery generates the select query based on the struct fields
-//Object can be a poninter to an array or struct
+// StructSelectQuery generates the select query based on the struct fields
+// Object can be a poninter to an array or struct
 func StructSelectQuery(table string, obj interface{}, conditions builder.Builder) (string, []interface{}, error) {
 	fields, joins, err := parseSelectStruct(table, "", obj, false)
 	if err != nil {
@@ -95,7 +95,7 @@ func StructSelectQuery(table string, obj interface{}, conditions builder.Builder
 	return query.String(), query.Value(), nil
 }
 
-//StructInsertQuery generates the insert query based on the struct fields
+// StructInsertQuery generates the insert query based on the struct fields
 func StructInsertQuery(table string, obj interface{}) (string, []interface{}) {
 	v := reflect.ValueOf(obj).Elem()
 	t := reflect.TypeOf(obj).Elem()
@@ -121,7 +121,7 @@ func StructInsertQuery(table string, obj interface{}) (string, []interface{}) {
 	return query.String(), query.Value()
 }
 
-//StructMultipleInsertQuery generates the insert query based on the array of structs
+// StructMultipleInsertQuery generates the insert query based on the array of structs
 func StructMultipleInsertQuery(table string, obj interface{}) (string, []interface{}) {
 	t := reflect.TypeOf(obj).Elem()
 	fields := []string{}
@@ -156,7 +156,7 @@ func StructMultipleInsertQuery(table string, obj interface{}) (string, []interfa
 	return query.String(), query.Value()
 }
 
-//StructUpdateQuery generates the update query based on the struct fields
+// StructUpdateQuery generates the update query based on the struct fields
 func StructUpdateQuery(table string, obj interface{}, updatableFields string, conditions builder.Builder) (string, []interface{}, error) {
 	v := reflect.ValueOf(obj).Elem()
 	t := reflect.TypeOf(obj).Elem()
@@ -183,7 +183,7 @@ func StructUpdateQuery(table string, obj interface{}, updatableFields string, co
 	return query.String(), query.Value(), nil
 }
 
-//StructDeleteQuery generates the delete query based on the struct fields
+// StructDeleteQuery generates the delete query based on the struct fields
 func StructDeleteQuery(table string, conditions builder.Builder) (string, []interface{}, error) {
 	statement := builder.Delete(table).Where(conditions)
 	query := builder.NewQuery()

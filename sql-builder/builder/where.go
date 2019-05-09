@@ -1,7 +1,7 @@
 package builder
 
-//Where add a new where clause to the query with all the conditions.
-//Only uses values attribute if where is a string.
+// Where add a new where clause to the query with all the conditions.
+// Only uses values attribute if where is a string.
 func where(where interface{}, values ...interface{}) Builder {
 	return PrepareFunc(func(q Query) error {
 		q.WriteString(" WHERE ")
