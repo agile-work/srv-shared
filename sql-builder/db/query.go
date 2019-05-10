@@ -26,7 +26,6 @@ func parseSelectStruct(table, alias string, obj interface{}, embedded bool) ([]s
 		if element.Kind() == reflect.Slice {
 			element = element.Elem()
 		}
-		fmt.Println(element)
 	}
 
 	fields := []string{}
