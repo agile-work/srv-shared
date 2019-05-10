@@ -12,11 +12,13 @@ import (
 // printQueryIfError show information about query execution if has error
 func printQueryIfError(err error, query string, values []interface{}) {
 	if err != nil {
-		fmt.Println("Error on execution query:")
-		fmt.Println(query)
+		fmt.Print("\033[1;31m\nError on execution query:\n\033[0m")
+		fmt.Print(err)
+		fmt.Print("\033[1;33m\n\nQuery:\n\033[0m")
+		fmt.Print(query)
 		if values != nil {
-			fmt.Println("Parameters:")
-			fmt.Println(values)
+			fmt.Print("\033[1;33m\n\nParameters:\n\033[0m")
+			fmt.Printf("%s\n\n", values)
 		}
 	}
 }
