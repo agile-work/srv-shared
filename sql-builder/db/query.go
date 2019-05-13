@@ -174,7 +174,7 @@ func StructUpdateQuery(table string, obj interface{}, updatableFields string, co
 
 	for i := 0; i < t.NumField(); i++ {
 		tag := t.Field(i).Tag
-		if tag.Get("sql") != "" && tag.Get("pk") != "true" && strings.Contains(updatableFields, tag.Get("sql")) {
+		if tag.Get("sql") != "" && tag.Get("pk") != "true" && (strings.Contains(updatableFields, tag.Get("sql")) || updatableFields == "") {
 			fields = append(fields, tag.Get("sql"))
 			value := v.Field(i).Interface()
 			if tag.Get("field") == "jsonb" {

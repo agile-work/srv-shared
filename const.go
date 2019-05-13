@@ -55,6 +55,12 @@ const (
 	TableCoreJobsFollowers string = "core_jobs_followers"
 	// TableCoreJobTasks database table name
 	TableCoreJobTasks string = "core_job_tasks"
+	// TableCoreJobInstances database table name
+	TableCoreJobInstances string = "core_job_instances"
+	// TableCoreJobInstanceTasks database table name
+	TableCoreJobInstanceTasks string = "core_job_instance_tasks"
+	// TableCoreServices database table name
+	TableCoreServices string = "core_services"
 	// ViewCoreJobFollowers database table name
 	ViewCoreJobFollowers string = "core_v_job_followers"
 	// ViewCoreUsersAndGroups database table name
