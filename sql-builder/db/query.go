@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -106,7 +107,11 @@ func StructInsertQuery(table string, obj interface{}) (string, []interface{}) {
 		tag := t.Field(i).Tag
 		if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" {
 			fields = append(fields, tag.Get("sql"))
-			args = append(args, v.Field(i).Interface())
+			value := v.Field(i).Interface()
+			if tag.Get("field") == "jsonb" {
+				value, _ = json.Marshal(value)
+			}
+			args = append(args, value)
 		}
 		if tag.Get("pk") == "true" {
 			pkField = tag.Get("sql")
@@ -142,7 +147,11 @@ func StructMultipleInsertQuery(table string, obj interface{}) (string, []interfa
 			for i := 0; i < valueStruct.Type().NumField(); i++ {
 				tag := valueStruct.Type().Field(i).Tag
 				if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" {
-					args = append(args, valueStruct.Field(i).Interface())
+					value := valueStruct.Field(i).Interface()
+					if tag.Get("field") == "jsonb" {
+						value, _ = json.Marshal(value)
+					}
+					args = append(args, value)
 				}
 			}
 			statement.Values(args...)
@@ -167,7 +176,11 @@ func StructUpdateQuery(table string, obj interface{}, updatableFields string, co
 		tag := t.Field(i).Tag
 		if tag.Get("sql") != "" && tag.Get("pk") != "true" && strings.Contains(updatableFields, tag.Get("sql")) {
 			fields = append(fields, tag.Get("sql"))
-			args = append(args, v.Field(i).Interface())
+			value := v.Field(i).Interface()
+			if tag.Get("field") == "jsonb" {
+				value, _ = json.Marshal(value)
+			}
+			args = append(args, value)
 		}
 	}
 

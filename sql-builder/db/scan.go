@@ -29,7 +29,14 @@ func StructScan(rows *sql.Rows, obj interface{}) error {
 		mapJSON := make(map[string]interface{})
 		for i, colName := range cols {
 			val := columnPointers[i].(*interface{})
-			mapJSON[colName] = *val
+			source, ok := columns[i].([]byte)
+			if ok {
+				var raw json.RawMessage
+				_ = json.Unmarshal(source, &raw)
+				mapJSON[colName] = raw
+			} else {
+				mapJSON[colName] = *val
+			}
 		}
 		results = append(results, mapJSON)
 	}
