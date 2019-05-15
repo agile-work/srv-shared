@@ -27,9 +27,8 @@ DROP TABLE IF EXISTS core_jobs_followers CASCADE;
 DROP TABLE IF EXISTS core_job_tasks CASCADE;
 DROP TABLE IF EXISTS core_job_instances CASCADE;
 DROP TABLE IF EXISTS core_job_task_instances CASCADE;
-DROP TABLE IF EXISTS core_job_task_params CASCADE;
-DROP TABLE IF EXISTS core_job_task_instance_params CASCADE;
 DROP TABLE IF EXISTS core_services CASCADE;
+DROP TABLE IF EXISTS core_system_params CASCADE;
 DROP VIEW IF EXISTS core_v_user_groups CASCADE;
 DROP VIEW IF EXISTS core_v_group_users CASCADE;
 DROP VIEW IF EXISTS core_v_users_and_groups CASCADE;
@@ -45,9 +44,9 @@ CREATE TABLE core_users (
   language_code CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(username)
 );
@@ -57,9 +56,9 @@ CREATE TABLE core_trees (
   code CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
@@ -69,9 +68,9 @@ CREATE TABLE core_tre_levels (
   code CHARACTER VARYING NOT NULL,
   tree_id CHARACTER VARYING NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
@@ -83,9 +82,9 @@ CREATE TABLE core_tre_units (
   parent_id CHARACTER VARYING,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(tree_id, code)
 );
@@ -95,9 +94,9 @@ CREATE TABLE core_currencies (
   code CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
@@ -109,12 +108,12 @@ CREATE TABLE core_cry_rates (
   from_currency_code CHARACTER VARYING NOT NULL,
   to_currency_code CHARACTER VARYING NOT NULL,
   value integer NOT NULL,
-  start_at TIMESTAMP NOT NULL,
-  end_at TIMESTAMP, 
+  start_at TIMESTAMPTZ NOT NULL,
+  end_at TIMESTAMPTZ, 
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id)
 );
 
@@ -123,9 +122,9 @@ CREATE TABLE core_config_languages (
   code CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
@@ -135,9 +134,9 @@ CREATE TABLE core_groups (
   code CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
@@ -150,9 +149,9 @@ CREATE TABLE core_grp_permissions (
   permission_type integer NOT NULL,
   condition_query CHARACTER VARYING,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id)
 );
 
@@ -161,9 +160,9 @@ CREATE TABLE core_groups_users (
   user_id CHARACTER VARYING NOT NULL,
   group_id CHARACTER VARYING NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(user_id, group_id)
 );
@@ -174,9 +173,9 @@ CREATE TABLE core_schemas (
   module BOOLEAN DEFAULT FALSE NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
@@ -186,9 +185,9 @@ CREATE TABLE core_schemas_modules (
   schema_id CHARACTER VARYING NOT NULL,
   module_id CHARACTER VARYING NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(schema_id, module_id)
 );
@@ -203,9 +202,9 @@ CREATE TABLE core_lookups (
   autocomplete CHARACTER VARYING,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
@@ -217,9 +216,9 @@ CREATE TABLE core_lkp_options (
   value CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(lookup_id, code)
 );
@@ -233,9 +232,9 @@ CREATE TABLE core_sch_fields (
   lookup_id CHARACTER VARYING,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(schema_id, code)
 );
@@ -247,9 +246,9 @@ CREATE TABLE core_sch_fld_validations (
   validation CHARACTER VARYING NOT NULL,
   valid_when CHARACTER VARYING,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id)
 );
 
@@ -260,9 +259,9 @@ CREATE TABLE core_widgets (
   widget_type CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
@@ -274,9 +273,9 @@ CREATE TABLE core_sch_pages (
   page_type CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(schema_id, code)
 );
@@ -287,9 +286,9 @@ CREATE TABLE core_sch_views (
   schema_id CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(schema_id, code)
 );
@@ -299,9 +298,9 @@ CREATE TABLE core_views_pages (
   view_id CHARACTER VARYING NOT NULL,
   page_id CHARACTER VARYING NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(view_id, page_id)
 );
@@ -312,9 +311,9 @@ CREATE TABLE core_sch_pag_sections (
   schema_id CHARACTER VARYING NOT NULL,
   page_id CHARACTER VARYING NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(schema_id, page_id, code)
 );
@@ -327,14 +326,14 @@ CREATE TABLE core_sch_pag_sec_tabs (
   section_id CHARACTER VARYING NOT NULL,
   tab_order integer NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(schema_id, page_id, section_id, code)
 );
 
-CREATE TABLE core_sch_pag_cnt_structures (
+CREATE TABLE core_sch_pag_cnt_structures ( -- core_sch_pag_containers_structures
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   schema_id CHARACTER VARYING NOT NULL,
   page_id CHARACTER VARYING NOT NULL,
@@ -347,9 +346,9 @@ CREATE TABLE core_sch_pag_cnt_structures (
   width integer NOT NULL,
   height integer NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(schema_id, page_id, container_id, container_type, structure_id, structure_type)
 );
@@ -367,39 +366,41 @@ CREATE TABLE core_translations (
 );
 
 CREATE TABLE core_jobs (
-  id CHARACTER VARYING DEFAULT uuid_generate_v4() NOT NULL,
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING,
   job_type CHARACTER VARYING NOT NULL, --system, user
+  parameters JSONB,
   exec_timeout INTEGER NOT NULL DEFAULT 60,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
 
 CREATE TABLE core_jobs_followers (
-  id CHARACTER VARYING DEFAULT uuid_generate_v4() NOT NULL,	
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,	
   job_id CHARACTER VARYING NOT NULL,
   follower_id CHARACTER VARYING NOT NULL,
   follower_type CHARACTER VARYING NOT NULL, --group, user
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(job_id, follower_id, follower_type)
 );
 
 CREATE TABLE core_job_tasks (
-  id CHARACTER VARYING DEFAULT uuid_generate_v4() NOT NULL,
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING,
   job_id CHARACTER VARYING NOT NULL,
   task_sequence INTEGER NOT NULL DEFAULT 0,  
   exec_timeout INTEGER NOT NULL DEFAULT 60,
   parent_id CHARACTER VARYING NOT NULL,
+  parameters JSONB,
   exec_action CHARACTER VARYING NOT NULL, --exec_query, api_post, api_get, api_delete, api_patch
   exec_address CHARACTER VARYING NOT NULL, --/api/v1/schema/{parent_id}/page
   exec_payload CHARACTER VARYING NOT NULL,
@@ -409,38 +410,40 @@ CREATE TABLE core_job_tasks (
   rollback_address CHARACTER VARYING, --/api/v1/schema/{parent_id}/fields/{field_id}
   rollback_payload CHARACTER VARYING,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(job_id, code)
 );
 
 CREATE TABLE core_job_instances (
-  id CHARACTER VARYING DEFAULT uuid_generate_v4() NOT NULL,
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   job_id CHARACTER VARYING NOT NULL,
   service_id CHARACTER VARYING,
   exec_timeout INTEGER NOT NULL DEFAULT 60,
+  parameters JSONB,
   status CHARACTER VARYING NOT NULL,
-  start_at TIMESTAMP,
-  finish_at TIMESTAMP,
+  start_at TIMESTAMPTZ,
+  finish_at TIMESTAMPTZ,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id)
 );
 
 CREATE TABLE core_job_task_instances (
-  id CHARACTER VARYING DEFAULT uuid_generate_v4() NOT NULL,
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   job_instance_id CHARACTER VARYING NOT NULL,
   task_id CHARACTER VARYING NOT NULL,
   status CHARACTER VARYING NOT NULL, -- created, processing, concluded, warning, fail
-  start_at TIMESTAMP,
-  finish_at TIMESTAMP,
+  start_at TIMESTAMPTZ,
+  finish_at TIMESTAMPTZ,
   task_sequence INTEGER NOT NULL DEFAULT 0,
   exec_timeout INTEGER NOT NULL DEFAULT 60,
   parent_id CHARACTER VARYING NOT NULL,
+  parameters JSONB,
   exec_action CHARACTER VARYING NOT NULL, --exec_query, api_post, api_get, api_delete, api_patch
   exec_address CHARACTER VARYING NOT NULL, --/api/v1/schema/{parent_id}/page
   exec_payload CHARACTER VARYING NOT NULL,
@@ -452,45 +455,34 @@ CREATE TABLE core_job_task_instances (
   rollback_payload CHARACTER VARYING,
   rollback_response CHARACTER VARYING,
   created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(job_instance_id, task_id)
 );
 
-CREATE TABLE core_job_task_params (
-	id CHARACTER VARYING DEFAULT uuid_generate_v4() NOT NULL,
-	task_id CHARACTER VARYING NOT NULL,
-	param_type CHARACTER VARYING NOT NULL, -- self, const, task
-	param_ref CHARACTER VARYING NOT NULL, --task00q
-	param_field CHARACTER VARYING NOT NULL, --task00q
-	param_key CHARACTER VARYING NOT NULL, --parent_id
-	param_value CHARACTER VARYING NOT NULL, --019201921-kadhjh-1kjadlkaj-ldklsak
-	PRIMARY KEY(id),
-	UNIQUE(task_id, param_key)
-);
-
-CREATE TABLE core_job_task_instance_params (
-	id CHARACTER VARYING DEFAULT uuid_generate_v4() NOT NULL,
-	task_instance_id CHARACTER VARYING NOT NULL,
-	param_type CHARACTER VARYING NOT NULL, -- self, const, task
-	param_ref CHARACTER VARYING NOT NULL, --task00q
-	param_field CHARACTER VARYING NOT NULL, --task00q
-	param_key CHARACTER VARYING NOT NULL, --parent_id
-	param_value CHARACTER VARYING NOT NULL, --019201921-kadhjh-1kjadlkaj-ldklsak
-  PRIMARY KEY(id)
-);
-
 CREATE TABLE core_services (
-	id CHARACTER VARYING DEFAULT uuid_generate_v4() NOT NULL,
+	id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
 	code CHARACTER VARYING NOT NULL,
 	service_type CHARACTER VARYING NOT NULL, -- module, aux, external
-	heartbeat_at TIMESTAMP NOT NULL,
-	registered_at TIMESTAMP NOT NULL,
+	heartbeat_at TIMESTAMPTZ NOT NULL,
+	registered_at TIMESTAMPTZ NOT NULL,
 	active BOOLEAN,
 	PRIMARY KEY(id),
 	UNIQUE(code)
+);
+
+CREATE TABLE core_system_params (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  param_key CHARACTER VARYING NOT NULL,
+  param_value CHARACTER VARYING NOT NULL,
+  created_by CHARACTER VARYING NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_by CHARACTER VARYING NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY(id),
+  UNIQUE(param_key)
 );
 
 CREATE VIEW core_v_user_groups AS
