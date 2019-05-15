@@ -57,8 +57,8 @@ const (
 	TableCoreJobTasks string = "core_job_tasks"
 	// TableCoreJobInstances database table name
 	TableCoreJobInstances string = "core_job_instances"
-	// TableCoreJobInstanceTasks database table name
-	TableCoreJobInstanceTasks string = "core_job_instance_tasks"
+	// TableCoreJobTaskInstances database table name
+	TableCoreJobTaskInstances string = "core_job_task_instances"
 	// TableCoreServices database table name
 	TableCoreServices string = "core_services"
 	// ViewCoreJobFollowers database table name
