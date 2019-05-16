@@ -69,4 +69,23 @@ const (
 	ViewCoreUserGroups string = "core_v_user_groups"
 	// ViewCoreGroupUsers database table name
 	ViewCoreGroupUsers string = "core_v_group_users"
+
+	//JobStatusCreating job status
+	JobStatusCreating string = "creating"
+	//JobStatusCreated job status
+	JobStatusCreated string = "created"
+	//JobStatusInQueue job status
+	JobStatusInQueue string = "queued"
+	//JobStatusProcessing job status
+	JobStatusProcessing string = "processing"
+	//JobStatusCompleted job status
+	JobStatusCompleted string = "completed"
+	//JobStatusWarnings job status
+	JobStatusWarnings string = "warnings"
+	//JobStatusFail job status
+	JobStatusFail string = "fail"
+	//JobStatusRollbacking job status
+	JobStatusRollbacking string = "rollbacking"
+	//JobStatusRetrying job status
+	JobStatusRetrying string = "retrying"
 )
