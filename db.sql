@@ -169,9 +169,11 @@ CREATE TABLE core_groups_users (
 
 CREATE TABLE core_schemas (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  job_id CHARACTER VARYING,
   code CHARACTER VARYING NOT NULL,
   module BOOLEAN DEFAULT FALSE NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
+  status CHARACTER VARYING DEFAULT 'processing' NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
@@ -419,6 +421,7 @@ CREATE TABLE core_job_tasks (
 
 CREATE TABLE core_job_instances (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  code CHARACTER VARYING NOT NULL,
   job_id CHARACTER VARYING NOT NULL,
   service_id CHARACTER VARYING,
   exec_timeout INTEGER NOT NULL DEFAULT 60,
@@ -437,6 +440,7 @@ CREATE TABLE core_job_task_instances (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   job_instance_id CHARACTER VARYING NOT NULL,
   task_id CHARACTER VARYING NOT NULL,
+  code CHARACTER VARYING NOT NULL,
   status CHARACTER VARYING NOT NULL, -- created, processing, concluded, warning, fail
   start_at TIMESTAMPTZ,
   finish_at TIMESTAMPTZ,
@@ -751,6 +755,7 @@ CREATE OR REPLACE FUNCTION trg_func_replic_job_task_to_instances() RETURNS TRIGG
   BEGIN
     INSERT INTO core_job_task_instances (
       task_id,
+      code,
       job_instance_id,
       status,
       start_at,
@@ -758,6 +763,7 @@ CREATE OR REPLACE FUNCTION trg_func_replic_job_task_to_instances() RETURNS TRIGG
       task_sequence,
       exec_timeout,
       parent_id,
+      parameters,
       exec_action,
       exec_address,
       exec_payload,
@@ -775,6 +781,7 @@ CREATE OR REPLACE FUNCTION trg_func_replic_job_task_to_instances() RETURNS TRIGG
     )
     SELECT
       id AS task_id,
+      code AS code,
       NEW.id AS job_instance_id,
       'created' AS status,
       null AS start_at,
@@ -782,6 +789,7 @@ CREATE OR REPLACE FUNCTION trg_func_replic_job_task_to_instances() RETURNS TRIGG
       task_sequence AS task_sequence,
       exec_timeout AS exec_timeout,
       parent_id AS parent_id,
+      parameters AS parameters,
       exec_action AS exec_action,
       exec_address AS exec_address,
       exec_payload AS exec_payload,

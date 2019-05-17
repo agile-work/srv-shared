@@ -1,91 +1,63 @@
 package shared
 
+// System consts
 const (
-	// TableCoreTrees database table name
-	TableCoreTrees string = "core_trees"
-	// TableCoreTreLevels database table name
-	TableCoreTreLevels string = "core_tre_levels"
-	// TableCoreTreUnits database table name
-	TableCoreTreUnits string = "core_tre_units"
-	// TableCoreCurrencies database table name
-	TableCoreCurrencies string = "core_currencies"
-	// TableCoreCryRates database table name
-	TableCoreCryRates string = "core_cry_rates"
-	// TableCoreConfigLanguages database table name
-	TableCoreConfigLanguages string = "core_config_languages"
-	// TableCoreUsers database table name
-	TableCoreUsers string = "core_users"
-	// TableCoreGroups database table name
-	TableCoreGroups string = "core_groups"
-	// TableCoreGrpPermissions database table name
-	TableCoreGrpPermissions string = "core_grp_permissions"
-	// TableCoreGroupsUsers database table name
-	TableCoreGroupsUsers string = "core_groups_users"
-	// TableCoreSchemas database table name
-	TableCoreSchemas string = "core_schemas"
-	// TableCoreSchemasModels database table name
-	TableCoreSchemasModels string = "core_schemas_models"
-	// TableCoreLookups database table name
-	TableCoreLookups string = "core_lookups"
-	// TableCoreLkpOptions database table name
-	TableCoreLkpOptions string = "core_lkp_options"
-	// TableCoreSchFields database table name
-	TableCoreSchFields string = "core_sch_fields"
-	// TableCoreSchFldValidations database table name
-	TableCoreSchFldValidations string = "core_sch_fld_validations"
-	// TableCoreWidgets database table name
-	TableCoreWidgets string = "core_widgets"
-	// TableCoreSchViews database table name
-	TableCoreSchViews string = "core_sch_views"
-	// TableCoreSchPages database table name
-	TableCoreSchPages string = "core_sch_pages"
-	// TableCoreViewsPages database table name
-	TableCoreViewsPages string = "core_views_pages"
-	// TableCoreSchPagSections database table name
-	TableCoreSchPagSections string = "core_sch_pag_sections"
-	// TableCoreSchPagSecTabs database table name
-	TableCoreSchPagSecTabs string = "core_sch_pag_sec_tabs"
-	// TableCoreSchPagCntStructures database table name
+	// Tables and Views
+	TableCoreTrees               string = "core_trees"
+	TableCoreTreLevels           string = "core_tre_levels"
+	TableCoreTreUnits            string = "core_tre_units"
+	TableCoreCurrencies          string = "core_currencies"
+	TableCoreCryRates            string = "core_cry_rates"
+	TableCoreConfigLanguages     string = "core_config_languages"
+	TableCoreUsers               string = "core_users"
+	TableCoreGroups              string = "core_groups"
+	TableCoreGrpPermissions      string = "core_grp_permissions"
+	TableCoreGroupsUsers         string = "core_groups_users"
+	TableCoreSchemas             string = "core_schemas"
+	TableCoreSchemasModels       string = "core_schemas_models"
+	TableCoreLookups             string = "core_lookups"
+	TableCoreLkpOptions          string = "core_lkp_options"
+	TableCoreSchFields           string = "core_sch_fields"
+	TableCoreSchFldValidations   string = "core_sch_fld_validations"
+	TableCoreWidgets             string = "core_widgets"
+	TableCoreSchViews            string = "core_sch_views"
+	TableCoreSchPages            string = "core_sch_pages"
+	TableCoreViewsPages          string = "core_views_pages"
+	TableCoreSchPagSections      string = "core_sch_pag_sections"
+	TableCoreSchPagSecTabs       string = "core_sch_pag_sec_tabs"
 	TableCoreSchPagCntStructures string = "core_sch_pag_cnt_structures"
-	// TableCoreTranslations database table name
-	TableCoreTranslations string = "core_translations"
-	// TableCoreJobs database table name
-	TableCoreJobs string = "core_jobs"
-	// TableCoreJobsFollowers database table name
-	TableCoreJobsFollowers string = "core_jobs_followers"
-	// TableCoreJobTasks database table name
-	TableCoreJobTasks string = "core_job_tasks"
-	// TableCoreJobInstances database table name
-	TableCoreJobInstances string = "core_job_instances"
-	// TableCoreJobTaskInstances database table name
-	TableCoreJobTaskInstances string = "core_job_task_instances"
-	// TableCoreServices database table name
-	TableCoreServices string = "core_services"
-	// ViewCoreJobFollowers database table name
-	ViewCoreJobFollowers string = "core_v_job_followers"
-	// ViewCoreUsersAndGroups database table name
-	ViewCoreUsersAndGroups string = "core_v_users_and_groups"
-	// ViewCoreUserGroups database table name
-	ViewCoreUserGroups string = "core_v_user_groups"
-	// ViewCoreGroupUsers database table name
-	ViewCoreGroupUsers string = "core_v_group_users"
+	TableCoreTranslations        string = "core_translations"
+	TableCoreJobs                string = "core_jobs"
+	TableCoreJobsFollowers       string = "core_jobs_followers"
+	TableCoreJobTasks            string = "core_job_tasks"
+	TableCoreJobInstances        string = "core_job_instances"
+	TableCoreJobTaskInstances    string = "core_job_task_instances"
+	TableCoreServices            string = "core_services"
+	ViewCoreJobFollowers         string = "core_v_job_followers"
+	ViewCoreUsersAndGroups       string = "core_v_users_and_groups"
+	ViewCoreUserGroups           string = "core_v_user_groups"
+	ViewCoreGroupUsers           string = "core_v_group_users"
 
-	//JobStatusCreating job status
-	JobStatusCreating string = "creating"
-	//JobStatusCreated job status
-	JobStatusCreated string = "created"
-	//JobStatusInQueue job status
-	JobStatusInQueue string = "queued"
-	//JobStatusProcessing job status
-	JobStatusProcessing string = "processing"
-	//JobStatusCompleted job status
-	JobStatusCompleted string = "completed"
-	//JobStatusWarnings job status
-	JobStatusWarnings string = "warnings"
-	//JobStatusFail job status
-	JobStatusFail string = "fail"
-	//JobStatusRollbacking job status
+	// Job status
+	JobStatusCreating    string = "creating"
+	JobStatusCreated     string = "created"
+	JobStatusInQueue     string = "queued"
+	JobStatusProcessing  string = "processing"
+	JobStatusCompleted   string = "completed"
+	JobStatusWarnings    string = "warnings"
+	JobStatusFail        string = "fail"
 	JobStatusRollbacking string = "rollbacking"
-	//JobStatusRetrying job status
-	JobStatusRetrying string = "retrying"
+	JobStatusRetrying    string = "retrying"
+
+	// System job codes
+	JobSystemCreateSchema string = "job_system_create_schema"
+
+	// Response errors
+	ErrorParsingRequest  string = "001-ErrorParsingRequest"
+	ErrorInsertingRecord string = "002-ErrorInsertingRecord"
+	ErrorReturningData   string = "003-ErrorReturningData"
+	ErrorDeletingData    string = "004-ErrorDeletingData"
+	ErrorLoadingData     string = "005-ErrorLoadingData"
+	ErrorLogin           string = "006-ErrorLoginUser"
+	ErrorJobExecution    string = "007-ErrorJobExecution"
 )
