@@ -38,16 +38,42 @@ const (
 	ViewCoreUserGroups           string = "core_v_user_groups"
 	ViewCoreGroupUsers           string = "core_v_group_users"
 
+	// Status
+	StatusCreating    string = "creating"
+	StatusCreated     string = "created"
+	StatusInQueue     string = "queued"
+	StatusProcessing  string = "processing"
+	StatusCompleted   string = "completed"
+	StatusWarnings    string = "warnings"
+	StatusFail        string = "fail"
+	StatusRollbacking string = "rollbacking"
+	StatusRetrying    string = "retrying"
+
+	// Job execution action
+	ExecuteQuery     string = "exec_query"
+	ExecuteAPIGet    string = "api_get"
+	ExecuteAPIPost   string = "api_post"
+	ExecuteAPIDelete string = "api_delete"
+	ExecuteAPIUpdate string = "api_patch"
+
+	// Job action on faill
+	OnFailContinue          string = "continue"
+	OnFailRetryAndContinue  string = "retry_and_continue"
+	OnFailCancel            string = "cancel"
+	OnFailRetryAndCancel    string = "retry_and_cancel"
+	OnFailRollback          string = "rollback"
+	OnFailRollbackAndCancel string = "rollback_and_cancel"
+
 	// Job status
-	JobStatusCreating    string = "creating"
-	JobStatusCreated     string = "created"
-	JobStatusInQueue     string = "queued"
-	JobStatusProcessing  string = "processing"
-	JobStatusCompleted   string = "completed"
-	JobStatusWarnings    string = "warnings"
-	JobStatusFail        string = "fail"
-	JobStatusRollbacking string = "rollbacking"
-	JobStatusRetrying    string = "retrying"
+	// JobStatusCreating    string = "creating"
+	// JobStatusCreated     string = "created"
+	// JobStatusInQueue     string = "queued"
+	// JobStatusProcessing  string = "processing"
+	// JobStatusCompleted   string = "completed"
+	// JobStatusWarnings    string = "warnings"
+	// JobStatusFail        string = "fail"
+	// JobStatusRollbacking string = "rollbacking"
+	// JobStatusRetrying    string = "retrying"
 
 	// System job codes
 	JobSystemCreateSchema string = "job_system_create_schema"
