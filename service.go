@@ -7,15 +7,6 @@ import (
 	"github.com/agile-work/srv-shared/sql-builder/db"
 )
 
-const (
-	//ServiceTypeExternal defines an external service
-	ServiceTypeExternal string = "external"
-	//ServiceTypeModule defines an module service
-	ServiceTypeModule string = "module"
-	//ServiceTypeAuxiliary defines an auxiliary service
-	ServiceTypeAuxiliary string = "auxiliary"
-)
-
 //Service represents a service in the system
 type Service struct {
 	ID           string    `json:"id" sql:"id" pk:"true"`
@@ -54,4 +45,28 @@ func RegisterService(code, serviceType string) (*Service, error) {
 	}
 	service.ID = id
 	return &service, nil
+}
+
+// GetSystemParams return system parameters
+func GetSystemParams() (map[string]string, error) {
+	statemant := builder.Select(
+		"param_key",
+		"param_value",
+	).From(TableCoreSystemParams)
+	rows, err := db.Query(statemant)
+	if err != nil {
+		return nil, err
+	}
+
+	params := map[string]string{}
+
+	for rows.Next() {
+		var key, value string
+		if err := rows.Scan(&key, &value); err != nil {
+			return nil, err
+		}
+		params[key] = value
+	}
+
+	return params, nil
 }

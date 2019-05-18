@@ -121,7 +121,10 @@ func (queue *Queue) close() {
 
 // New declare a new queue.
 func New(addr, name string, durable bool) (*Queue, error) {
-	connect(addr)
+	err := connect(addr)
+	if err != nil {
+		return nil, err
+	}
 
 	q := Queue{
 		name:    name,

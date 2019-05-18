@@ -32,6 +32,7 @@ DROP TABLE IF EXISTS core_system_params CASCADE;
 DROP VIEW IF EXISTS core_v_user_groups CASCADE;
 DROP VIEW IF EXISTS core_v_group_users CASCADE;
 DROP VIEW IF EXISTS core_v_users_and_groups CASCADE;
+DROP VIEW IF EXISTS core_v_sch_modules CASCADE;
 DROP VIEW IF EXISTS core_v_job_followers CASCADE;
 
 CREATE TABLE core_users (
@@ -537,7 +538,7 @@ CREATE VIEW core_v_users_and_groups AS
     SELECT
       core_users.id AS id,
       core_users.first_name || ' ' || core_users.last_name AS name,
-      null AS language_code,
+      NULL AS language_code,
       'user' AS ug_type,
       core_users.active AS active,
       core_users.created_by AS created_by,
@@ -563,6 +564,30 @@ CREATE VIEW core_v_users_and_groups AS
     ON core_translations_name.structure_id = core_groups.id
     AND core_translations_name.structure_field = 'name'
   ) AS groups;
+
+CREATE VIEW core_v_sch_modules AS
+  SELECT
+    core_schemas.id AS id,
+    core_schemas_modules.schema_id AS schema_id,
+    core_schemas.code AS code,
+    core_translations_name.value AS name,
+    core_translations_description.value AS description,
+    core_translations_name.language_code AS language_code,
+    core_schemas.module AS module,
+    core_schemas.active AS active,
+    core_schemas.created_by AS created_by,
+    core_schemas.created_at AS created_at,
+    core_schemas.updated_by AS updated_by,
+    core_schemas.updated_at AS updated_at
+  FROM core_schemas
+  JOIN core_translations AS core_translations_name
+  ON core_translations_name.structure_id = core_schemas.id
+  and core_translations_name.structure_field = 'name'
+  JOIN core_translations AS core_translations_description
+  ON core_translations_description.structure_id = core_schemas.id
+  and core_translations_description.structure_field = 'description'
+  JOIN core_schemas_modules ON core_schemas_modules.module_id = core_schemas.id
+  WHERE core_translations_name.language_code =  core_translations_description.language_code;
 
 CREATE VIEW core_v_job_followers AS 
   SELECT
@@ -784,8 +809,8 @@ CREATE OR REPLACE FUNCTION trg_func_replic_job_task_to_instances() RETURNS TRIGG
       code AS code,
       NEW.id AS job_instance_id,
       'created' AS status,
-      null AS start_at,
-      null AS finish_at,
+      NULL AS start_at,
+      NULL AS finish_at,
       task_sequence AS task_sequence,
       exec_timeout AS exec_timeout,
       parent_id AS parent_id,
@@ -793,13 +818,13 @@ CREATE OR REPLACE FUNCTION trg_func_replic_job_task_to_instances() RETURNS TRIGG
       exec_action AS exec_action,
       exec_address AS exec_address,
       exec_payload AS exec_payload,
-      null AS exec_response,
+      NULL AS exec_response,
       action_on_fail AS action_on_fail,
       max_retry_attempts AS max_retry_attempts,
       rollback_action AS rollback_action,
       rollback_address AS rollback_address,
       rollback_payload AS rollback_payload,
-      null AS rollback_response,
+      NULL AS rollback_response,
       NEW.created_by AS created_by,
       NEW.updated_by AS updated_by,
       NEW.updated_at AS updated_at,
@@ -808,7 +833,7 @@ CREATE OR REPLACE FUNCTION trg_func_replic_job_task_to_instances() RETURNS TRIGG
     WHERE
       job_id = NEW.job_id;
 
-    UPDATE core_job_instances SET status = 'created', updated_at = NOW();
+    UPDATE core_job_instances SET status = 'created', updated_at = NOW() WHERE id = NEW.id;
     RETURN NEW;
   END;
 $$ LANGUAGE plpgsql;

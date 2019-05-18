@@ -33,21 +33,23 @@ const (
 	TableCoreJobInstances        string = "core_job_instances"
 	TableCoreJobTaskInstances    string = "core_job_task_instances"
 	TableCoreServices            string = "core_services"
+	TableCoreSystemParams        string = "core_system_params"
 	ViewCoreJobFollowers         string = "core_v_job_followers"
 	ViewCoreUsersAndGroups       string = "core_v_users_and_groups"
+	ViewCoreSchModules           string = "core_v_sch_modules"
 	ViewCoreUserGroups           string = "core_v_user_groups"
 	ViewCoreGroupUsers           string = "core_v_group_users"
 
-	// Status
-	StatusCreating    string = "creating"
-	StatusCreated     string = "created"
-	StatusInQueue     string = "queued"
-	StatusProcessing  string = "processing"
-	StatusCompleted   string = "completed"
-	StatusWarnings    string = "warnings"
-	StatusFail        string = "fail"
-	StatusRollbacking string = "rollbacking"
-	StatusRetrying    string = "retrying"
+	// Job status
+	JobStatusCreating    string = "creating"
+	JobStatusCreated     string = "created"
+	JobStatusInQueue     string = "queued"
+	JobStatusProcessing  string = "processing"
+	JobStatusCompleted   string = "completed"
+	JobStatusWarnings    string = "warnings"
+	JobStatusFail        string = "fail"
+	JobStatusRollbacking string = "rollbacking"
+	JobStatusRetrying    string = "retrying"
 
 	// Job execution action
 	ExecuteQuery     string = "exec_query"
@@ -64,17 +66,6 @@ const (
 	OnFailRollback          string = "rollback"
 	OnFailRollbackAndCancel string = "rollback_and_cancel"
 
-	// Job status
-	// JobStatusCreating    string = "creating"
-	// JobStatusCreated     string = "created"
-	// JobStatusInQueue     string = "queued"
-	// JobStatusProcessing  string = "processing"
-	// JobStatusCompleted   string = "completed"
-	// JobStatusWarnings    string = "warnings"
-	// JobStatusFail        string = "fail"
-	// JobStatusRollbacking string = "rollbacking"
-	// JobStatusRetrying    string = "retrying"
-
 	// System job codes
 	JobSystemCreateSchema string = "job_system_create_schema"
 
@@ -86,4 +77,15 @@ const (
 	ErrorLoadingData     string = "005-ErrorLoadingData"
 	ErrorLogin           string = "006-ErrorLoginUser"
 	ErrorJobExecution    string = "007-ErrorJobExecution"
+
+	// Service types
+	ServiceTypeExternal  string = "external"
+	ServiceTypeModule    string = "module"
+	ServiceTypeAuxiliary string = "auxiliary"
+
+	// System parameters
+	SysParamAPIHost          string = "api_host"
+	SysParamAPILoginURL      string = "api_login_url"
+	SysParamAPILoginEmail    string = "api_login_email"
+	SysParamAPILoginPassword string = "api_login_password"
 )
