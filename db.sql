@@ -34,6 +34,8 @@ DROP VIEW IF EXISTS core_v_group_users CASCADE;
 DROP VIEW IF EXISTS core_v_users_and_groups CASCADE;
 DROP VIEW IF EXISTS core_v_sch_modules CASCADE;
 DROP VIEW IF EXISTS core_v_job_followers CASCADE;
+DROP VIEW IF EXISTS core_v_core_job_instance CASCADE;
+DROP VIEW IF EXISTS core_v_core_job_task_instance CASCADE;
 
 CREATE TABLE core_users (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
@@ -406,7 +408,7 @@ CREATE TABLE core_job_tasks (
   parameters JSONB,
   exec_action CHARACTER VARYING NOT NULL, --exec_query, api_post, api_get, api_delete, api_patch
   exec_address CHARACTER VARYING NOT NULL, --/api/v1/schema/{parent_id}/page
-  exec_payload CHARACTER VARYING NOT NULL,
+  exec_payload CHARACTER VARYING,
   action_on_fail CHARACTER VARYING NOT NULL, --continue, retry_and_continue, cancel, retry_and_cancel, rollback, retry_and_rollback
   max_retry_attempts INTEGER DEFAULT 2,
   rollback_action CHARACTER VARYING, --drop table, api_delete
@@ -512,7 +514,7 @@ CREATE VIEW core_v_user_groups AS
   JOIN core_translations core_translations_description
   ON core_translations_description.structure_id = core_groups.id
   AND core_translations_description.structure_field = 'description'
-  WHERE core_translations_name.language_code =  core_translations_description.language_code;
+  WHERE core_translations_name.language_code = core_translations_description.language_code;
 
 CREATE VIEW core_v_group_users AS
   SELECT
@@ -605,6 +607,77 @@ CREATE VIEW core_v_job_followers AS
   JOIN core_v_users_and_groups AS ug
   ON ug.id = followers.follower_id
   AND ug.ug_type = followers.follower_type;
+
+CREATE VIEW core_v_core_job_instance AS
+  SELECT
+    core_job_instances.id AS id,
+    core_jobs.id AS job_id,
+    core_job_instances.code AS code,
+    core_translations_name.value AS name,
+    core_translations_description.value AS description,
+    core_translations_name.language_code AS language_code,
+    core_jobs.job_type AS job_type,
+    core_job_instances.exec_timeout AS exec_timeout,
+    core_job_instances.parameters AS parameters,
+    core_job_instances.status AS status,
+    core_job_instances.start_at AS start_at,
+    core_job_instances.finish_at AS finish_at,
+    core_job_instances.created_by AS created_by,
+    core_job_instances.created_at AS created_at,
+    core_job_instances.updated_by AS updated_by,
+    core_job_instances.updated_at AS updated_at
+  FROM core_jobs
+  JOIN core_job_instances
+  ON core_job_instances.job_id = core_jobs.id
+  JOIN core_translations core_translations_name
+  ON core_translations_name.structure_id = core_jobs.id
+  AND core_translations_name.structure_field = 'name'
+  JOIN core_translations core_translations_description
+  ON core_translations_description.structure_id = core_jobs.id
+  AND core_translations_description.structure_field = 'description'
+  WHERE core_translations_name.language_code = core_translations_description.language_code;
+
+CREATE VIEW core_v_core_job_task_instance AS
+  SELECT
+    core_job_task_instances.id AS id,
+    core_job_tasks.id AS task_id,
+    core_job_tasks.job_id AS job_id,
+    core_job_task_instances.job_instance_id AS job_instance_id,
+    core_job_task_instances.code AS code,
+    core_translations_name.value AS name,
+    core_translations_description.value AS description,
+    core_translations_name.language_code AS language_code,
+    core_job_task_instances.status AS status,
+    core_job_task_instances.start_at AS start_at,
+    core_job_task_instances.finish_at AS finish_at,
+    core_job_task_instances.task_sequence AS task_sequence,
+    core_job_task_instances.exec_timeout AS exec_timeout,
+    core_job_task_instances.parameters AS parameters,
+    core_job_task_instances.parent_id AS parent_id,
+    core_job_task_instances.exec_action AS exec_action,
+    core_job_task_instances.exec_address AS exec_address,
+    core_job_task_instances.exec_payload AS exec_payload,
+    core_job_task_instances.exec_response AS exec_response,
+    core_job_task_instances.action_on_fail AS action_on_fail,
+    core_job_task_instances.max_retry_attempts AS max_retry_attempts,
+    core_job_task_instances.rollback_action AS rollback_action,
+    core_job_task_instances.rollback_address AS rollback_address,
+    core_job_task_instances.rollback_payload AS rollback_payload,
+    core_job_task_instances.rollback_response AS rollback_response,
+    core_job_task_instances.created_by AS created_by,
+    core_job_task_instances.created_at AS created_at,
+    core_job_task_instances.updated_by AS updated_by,
+    core_job_task_instances.updated_at AS updated_at
+  FROM core_job_tasks
+  JOIN core_job_task_instances
+  ON core_job_task_instances.task_id = core_job_tasks.id
+  JOIN core_translations core_translations_name
+  ON core_translations_name.structure_id = core_job_tasks.id
+  AND core_translations_name.structure_field = 'name'
+  JOIN core_translations core_translations_description
+  ON core_translations_description.structure_id = core_job_tasks.id
+  AND core_translations_description.structure_field = 'description'
+  WHERE core_translations_name.language_code = core_translations_description.language_code;
 
 INSERT INTO core_users(
   id,

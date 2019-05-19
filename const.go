@@ -35,6 +35,8 @@ const (
 	TableCoreServices            string = "core_services"
 	TableCoreSystemParams        string = "core_system_params"
 	ViewCoreJobFollowers         string = "core_v_job_followers"
+	ViewCoreJobInstances         string = "core_v_core_job_instance"
+	ViewCoreJobTaskInstances     string = "core_v_core_job_task_instance"
 	ViewCoreUsersAndGroups       string = "core_v_users_and_groups"
 	ViewCoreSchModules           string = "core_v_sch_modules"
 	ViewCoreUserGroups           string = "core_v_user_groups"
@@ -68,6 +70,7 @@ const (
 
 	// System job codes
 	JobSystemCreateSchema string = "job_system_create_schema"
+	JobSystemDeleteSchema string = "job_system_delete_schema"
 
 	// Response errors
 	ErrorParsingRequest  string = "001-ErrorParsingRequest"

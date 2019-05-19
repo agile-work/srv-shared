@@ -7,7 +7,7 @@ import (
 	"github.com/agile-work/srv-shared/sql-builder/db"
 )
 
-//Service represents a service in the system
+// Service represents a service in the system
 type Service struct {
 	ID           string    `json:"id" sql:"id" pk:"true"`
 	Code         string    `json:"code" sql:"code"`
@@ -17,20 +17,20 @@ type Service struct {
 	Active       bool      `json:"active" sql:"active"`
 }
 
-//Heartbeat update service in the database
+// Heartbeat update service in the database
 func (s *Service) Heartbeat(t time.Time) error {
 	s.Active = true
 	s.HeartbeatAt = t
 	return db.UpdateStruct(TableCoreServices, s, builder.Equal("id", s.ID), "heartbeat_at", "active")
 }
 
-//Down set service down in the database
+// Down set service down in the database
 func (s *Service) Down() error {
 	s.Active = false
 	return db.UpdateStruct(TableCoreServices, s, builder.Equal("id", s.ID), "active")
 }
 
-//RegisterService register the service in the database
+// RegisterService register the service in the database
 func RegisterService(code, serviceType string) (*Service, error) {
 	service := Service{
 		Code:         code,
