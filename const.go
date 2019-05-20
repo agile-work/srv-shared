@@ -42,6 +42,11 @@ const (
 	ViewCoreUserGroups           string = "core_v_user_groups"
 	ViewCoreGroupUsers           string = "core_v_group_users"
 
+	// Schema status
+	SchemaStatusProcessing string = "processing"
+	SchemaStatusCompleted  string = "completed"
+	SchemaStatusDeleting   string = "deleting"
+
 	// Job status
 	JobStatusCreating    string = "creating"
 	JobStatusCreated     string = "created"
