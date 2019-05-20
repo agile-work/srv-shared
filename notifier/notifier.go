@@ -3,6 +3,10 @@ package notifier
 import (
 	"encoding/json"
 	"time"
+
+	"github.com/agile-work/srv-shared/sql-builder/builder"
+
+	"github.com/agile-work/srv-shared/sql-builder/db"
 )
 
 type notification struct {
@@ -61,14 +65,21 @@ type Receiver struct {
 }
 
 type user struct {
-	UserName     string
-	Email        bool
-	Notification bool
-	Realtime     bool
+	UserID       string `json:"id" sql:"id"`
+	UserEmail    string `json:"user_email" sql:"email"`
+	SendEmail    bool   `json:"send_email" sql:"send_email"`
+	Notify       bool   `json:"notify" sql:"notify"`
+	EmitRealtime bool   `json:"emit_realtime" sql:"emit_realtime"`
 }
 
 // LoadUsers get usernames from groups and followers
 func (r *Receiver) LoadUsers() {
+	statement := builder.Raw("select distinct usr.id, usr.email, true send_email, true notify, true emit_realtime, from core_users usr where usr.id in ()")
+	rows, err := db.Query(statement)
+	if err != nil {
+		// TODO: log this erro to file
+	}
+	db.StructScan(rows, &r.allUsers)
 	// TODO: Get receivers usernames from groups and followers table
 	// TODO: Remove duplicated usernames
 	// TODO: Pupulate arrays: allUsers
@@ -90,15 +101,14 @@ func New(message Message, receiver Receiver, passthrough, forceEmail bool) {
 		receiver.Validate()
 	}
 
+	// TODO: Emit to websocket
+
 	for _, usr := range receiver.allUsers {
-		if usr.Notification {
+		if usr.Notify {
 			// TODO: Insert one row for each user in the DB with the message
 		}
-		if usr.Email {
+		if usr.SendEmail {
 			// TODO: Send email
-		}
-		if usr.Realtime {
-			// TODO: Emit to websocket
 		}
 	}
 }
