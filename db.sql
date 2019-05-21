@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS core_groups CASCADE;
 DROP TABLE IF EXISTS core_grp_permissions CASCADE;
 DROP TABLE IF EXISTS core_groups_users CASCADE;
 DROP TABLE IF EXISTS core_schemas CASCADE;
+DROP TABLE IF EXISTS core_sch_followers CASCADE;
 DROP TABLE IF EXISTS core_schemas_modules CASCADE;
 DROP TABLE IF EXISTS core_lookups CASCADE;
 DROP TABLE IF EXISTS core_lkp_options CASCADE;
@@ -34,8 +35,9 @@ DROP VIEW IF EXISTS core_v_group_users CASCADE;
 DROP VIEW IF EXISTS core_v_users_and_groups CASCADE;
 DROP VIEW IF EXISTS core_v_sch_modules CASCADE;
 DROP VIEW IF EXISTS core_v_job_followers CASCADE;
-DROP VIEW IF EXISTS core_v_core_job_instance CASCADE;
-DROP VIEW IF EXISTS core_v_core_job_task_instance CASCADE;
+DROP VIEW IF EXISTS core_v_job_instance CASCADE;
+DROP VIEW IF EXISTS core_v_job_task_instance CASCADE;
+DROP VIEW IF EXISTS core_v_fields_by_permission CASCADE;
 
 CREATE TABLE core_users (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
@@ -183,6 +185,19 @@ CREATE TABLE core_schemas (
   updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
+);
+
+CREATE TABLE core_sch_followers (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,	
+  schema_id CHARACTER VARYING NOT NULL,
+  schema_instance_id CHARACTER VARYING NOT NULL,
+  user_id CHARACTER VARYING NOT NULL,
+  created_by CHARACTER VARYING NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_by CHARACTER VARYING NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY(id),
+  UNIQUE(schema_id, schema_instance_id, user_id)
 );
 
 CREATE TABLE core_schemas_modules (
@@ -608,7 +623,7 @@ CREATE VIEW core_v_job_followers AS
   ON ug.id = followers.follower_id
   AND ug.ug_type = followers.follower_type;
 
-CREATE VIEW core_v_core_job_instance AS
+CREATE VIEW core_v_job_instance AS
   SELECT
     core_job_instances.id AS id,
     core_jobs.id AS job_id,
@@ -637,7 +652,7 @@ CREATE VIEW core_v_core_job_instance AS
   AND core_translations_description.structure_field = 'description'
   WHERE core_translations_name.language_code = core_translations_description.language_code;
 
-CREATE VIEW core_v_core_job_task_instance AS
+CREATE VIEW core_v_job_task_instance AS
   SELECT
     core_job_task_instances.id AS id,
     core_job_tasks.id AS task_id,
@@ -678,6 +693,52 @@ CREATE VIEW core_v_core_job_task_instance AS
   ON core_translations_description.structure_id = core_job_tasks.id
   AND core_translations_description.structure_field = 'description'
   WHERE core_translations_name.language_code = core_translations_description.language_code;
+
+CREATE VIEW core_v_fields_by_permission AS
+  SELECT
+    f.id AS id,
+    f.schema_id AS schema_id,
+    ug.user_id AS user_id,
+    f.code AS code,
+    translations_name.value AS name,
+    translations_description.value AS description,
+    f.field_type AS field_type,
+    f.multivalue AS multivalue,
+    f.lookup_id AS lookup_id,
+    f.active AS active,
+    translations_name.language_code AS language_code,
+    max(gp.permission_type) permission
+  FROM core_groups_users ug
+  JOIN core_groups g
+  ON g.id = ug.group_id
+  JOIN core_grp_permissions gp
+  ON gp.group_id = ug.group_id
+  JOIN core_sch_fields f
+  ON f.id = gp.structure_id
+  AND gp.structure_type = 'field'
+  JOIN core_schemas s
+  ON s.id = f.schema_id
+  JOIN core_translations translations_name
+  ON translations_name.structure_id = f.id
+  AND translations_name.structure_field = 'name'
+  JOIN core_translations translations_description
+  ON translations_description.structure_id = f.id
+  AND translations_description.structure_field = 'description'
+  WHERE f.active = true
+  AND g.active = true
+  AND translations_name.language_code = translations_description.language_code
+  GROUP BY
+    f.id,
+    f.schema_id,
+    ug.user_id,
+    f.code,
+    translations_name.value,
+    translations_description.value,
+    f.field_type,
+    f.multivalue,
+    f.lookup_id,
+    f.active,
+    translations_name.language_code;
 
 INSERT INTO core_users(
   id,
