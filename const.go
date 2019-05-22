@@ -10,6 +10,7 @@ const (
 	TableCoreCryRates            string = "core_cry_rates"
 	TableCoreConfigLanguages     string = "core_config_languages"
 	TableCoreUsers               string = "core_users"
+	TableCoreUsrNotifications    string = "core_usr_notifications"
 	TableCoreGroups              string = "core_groups"
 	TableCoreGrpPermissions      string = "core_grp_permissions"
 	TableCoreGroupsUsers         string = "core_groups_users"
