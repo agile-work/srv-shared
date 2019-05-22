@@ -6,6 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSelectJSONStatement(t *testing.T) {
+	statement := Select("tn.id").JSON("tn.data", "code", "name", "cost").From("table_name tn").Where(
+		Equal("tn.data->'code'", "00001"),
+	)
+	query := NewQuery()
+	statement.Prepare(query)
+
+	assert.Equal(t, "SELECT tn.id, tn.data->'code' as code, tn.data->'name' as name, tn.data->'cost' as cost FROM table_name tn WHERE (tn.data->'code' = $1)", query.String())
+}
+
 func TestSelectStatement(t *testing.T) {
 	statement := Select("tn.column", "tn.column2", "tx.column").From("table_name tn").Join("table_external tx", "tx.fk_id = tn.id").Where(
 		Or(

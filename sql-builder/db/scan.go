@@ -8,9 +8,8 @@ import (
 	"strings"
 )
 
-// StructScan write rows data to struct array or struct
-func StructScan(rows *sql.Rows, obj interface{}) error {
-
+// MapScan scan rows to a map
+func MapScan(rows *sql.Rows) ([]map[string]interface{}, error) {
 	cols, _ := rows.Columns()
 
 	results := []map[string]interface{}{}
@@ -23,7 +22,7 @@ func StructScan(rows *sql.Rows, obj interface{}) error {
 		}
 
 		if err := rows.Scan(columnPointers...); err != nil {
-			return err
+			return nil, err
 		}
 
 		mapJSON := make(map[string]interface{})
@@ -43,10 +42,21 @@ func StructScan(rows *sql.Rows, obj interface{}) error {
 	rows.Close()
 
 	if len(results) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	results = processEmbeddedStructs(results)
+
+	return results, nil
+}
+
+// StructScan write rows data to struct array or struct
+func StructScan(rows *sql.Rows, obj interface{}) error {
+
+	results, err := MapScan(rows)
+	if err != nil {
+		return err
+	}
 
 	var jsonMap []byte
 	if reflect.TypeOf(obj).Elem().Kind() == reflect.Struct {
@@ -86,7 +96,9 @@ func processEmbeddedStructs(results []map[string]interface{}) []map[string]inter
 				}
 			}
 		}
-		results[i][embeddedColumnName] = embeddedMap
+		if embeddedColumnName != "" {
+			results[i][embeddedColumnName] = embeddedMap
+		}
 	}
 	return results
 }

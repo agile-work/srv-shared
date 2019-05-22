@@ -698,6 +698,7 @@ CREATE VIEW core_v_fields_by_permission AS
   SELECT
     f.id AS id,
     f.schema_id AS schema_id,
+    s.code AS schema_code,
     ug.user_id AS user_id,
     f.code AS code,
     translations_name.value AS name,
@@ -730,6 +731,7 @@ CREATE VIEW core_v_fields_by_permission AS
   GROUP BY
     f.id,
     f.schema_id,
+    s.code,
     ug.user_id,
     f.code,
     translations_name.value,

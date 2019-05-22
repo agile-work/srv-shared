@@ -9,20 +9,6 @@ import (
 	"github.com/agile-work/srv-shared/sql-builder/builder"
 )
 
-// printQueryIfError show information about query execution if has error
-func printQueryIfError(err error, query string, values []interface{}) {
-	if err != nil {
-		fmt.Print("\033[1;31m\nError on execution query:\n\033[0m")
-		fmt.Print(err)
-		fmt.Print("\033[1;33m\n\nQuery:\n\033[0m")
-		fmt.Print(query)
-		if values != nil {
-			fmt.Print("\033[1;33m\n\nParameters:\n\033[0m")
-			fmt.Printf("%s\n\n", values)
-		}
-	}
-}
-
 // QueryStruct prepare and execute the statement and then populates the model
 // model must be a pointer to a struct or an array.
 func QueryStruct(statement builder.Builder, model interface{}) error {
@@ -107,4 +93,18 @@ func Query(statement builder.Builder) (*sql.Rows, error) {
 	query := builder.NewQuery()
 	statement.Prepare(query)
 	return db.Query(query.String(), query.Value()...)
+}
+
+// printQueryIfError show information about query execution if has error
+func printQueryIfError(err error, query string, values []interface{}) {
+	if err != nil {
+		fmt.Print("\033[1;31m\nError on execution query:\n\033[0m")
+		fmt.Print(err)
+		fmt.Print("\033[1;33m\n\nQuery:\n\033[0m")
+		fmt.Print(query)
+		if values != nil {
+			fmt.Print("\033[1;33m\n\nParameters:\n\033[0m")
+			fmt.Printf("%s\n\n", values)
+		}
+	}
 }

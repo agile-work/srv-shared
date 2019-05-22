@@ -79,13 +79,14 @@ const (
 	JobSystemDeleteSchema string = "job_system_delete_schema"
 
 	// Response errors
-	ErrorParsingRequest  string = "001-ErrorParsingRequest"
-	ErrorInsertingRecord string = "002-ErrorInsertingRecord"
-	ErrorReturningData   string = "003-ErrorReturningData"
-	ErrorDeletingData    string = "004-ErrorDeletingData"
-	ErrorLoadingData     string = "005-ErrorLoadingData"
-	ErrorLogin           string = "006-ErrorLoginUser"
-	ErrorJobExecution    string = "007-ErrorJobExecution"
+	ErrorParsingRequest   string = "001-ErrorParsingRequest"
+	ErrorInsertingRecord  string = "002-ErrorInsertingRecord"
+	ErrorReturningData    string = "003-ErrorReturningData"
+	ErrorDeletingData     string = "004-ErrorDeletingData"
+	ErrorLoadingData      string = "005-ErrorLoadingData"
+	ErrorLogin            string = "006-ErrorLoginUser"
+	ErrorJobExecution     string = "007-ErrorJobExecution"
+	ErrorLoadingInstances string = "007-ErrorLoadingInstances"
 
 	// Service types
 	ServiceTypeExternal  string = "external"

@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -10,6 +11,7 @@ type Statement struct {
 	Type          string
 	Table         string
 	Columns       []string
+	JSONColumns   map[string][]string
 	WhereCond     Builder
 	JoinTable     []Builder
 	Data          []interface{}
@@ -52,6 +54,22 @@ func prepareSelect(s *Statement, q Query) error {
 
 	q.WriteString("SELECT ")
 	q.WriteString(strings.Join(s.Columns, ", "))
+
+	if len(s.JSONColumns) > 0 {
+		if len(s.Columns) > 0 {
+			q.WriteString(", ")
+		}
+		for column, fields := range s.JSONColumns {
+			for i, f := range fields {
+				if i > 0 {
+					q.WriteString(", ")
+				}
+				jsonCol := fmt.Sprintf("%s->'%s' as %s", column, f, f)
+				q.WriteString(jsonCol)
+			}
+		}
+	}
+
 	q.WriteString(" FROM ")
 	q.WriteString(s.Table)
 
