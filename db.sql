@@ -1,8 +1,10 @@
 DROP TABLE IF EXISTS core_users CASCADE;
-DROP TABLE IF EXISTS core_usr_notifications CASCADE;
+DROP TABLE IF EXISTS core_permission_users_instances CASCADE;
+DROP TABLE IF EXISTS core_user_notifications CASCADE;
+DROP TABLE IF EXISTS core_user_notification_emails CASCADE;
 DROP TABLE IF EXISTS core_trees CASCADE;
-DROP TABLE IF EXISTS core_tre_levels CASCADE;
-DROP TABLE IF EXISTS core_tre_units CASCADE;
+DROP TABLE IF EXISTS core_tree_levels CASCADE;
+DROP TABLE IF EXISTS core_tree_units CASCADE;
 DROP TABLE IF EXISTS core_currencies CASCADE;
 DROP TABLE IF EXISTS core_cry_rates CASCADE;
 DROP TABLE IF EXISTS core_config_languages CASCADE;
@@ -46,7 +48,7 @@ CREATE TABLE core_users (
   first_name CHARACTER VARYING NOT NULL,
   last_name CHARACTER VARYING NOT NULL,
   email CHARACTER VARYING NOT NULL,
-  receive_emails CHARACTER VARYING NOT NULL,
+  receive_emails CHARACTER VARYING NOT NULL, -- always, never, required
   password CHARACTER VARYING NOT NULL,
   language_code CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
@@ -58,22 +60,46 @@ CREATE TABLE core_users (
   UNIQUE(username)
 );
 
-CREATE TABLE core_usr_notifications (
+CREATE TABLE core_instance_premissions (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  user_id CHARACTER VARYING NOT NULL,
-  structure_id CHARACTER VARYING NOT NULL,
-  structure_type CHARACTER VARYING NOT NULL,
-  scope CHARACTER VARYING NOT NULL,
-  message_action CHARACTER VARYING NOT NULL,
-  link CHARACTER VARYING NOT NULL,
-  sender CHARACTER VARYING NOT NULL,
-  message_text CHARACTER VARYING NOT NULL,
-  acknowledged BOOLEAN DEFAULT FALSE,
-  email_sent BOOLEAN DEFAULT FALSE,
+  entity_id CHARACTER VARYING NOT NULL,
+  entity_type CHARACTER VARYING NOT NULL,
+  instance_id CHARACTER VARYING NOT NULL,
+  instance_type CHARACTER VARYING NOT NULL,
+  permissions JSONB,  
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY(id),
+  UNIQUE(entity_id, instance_id)
+);
+
+CREATE TABLE core_user_notifications (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  user_id CHARACTER VARYING NOT NULL,
+  structure_id CHARACTER VARYING NOT NULL,
+  structure_type CHARACTER VARYING NOT NULL,
+  message_action CHARACTER VARYING NOT NULL,
+  link CHARACTER VARYING NOT NULL,
+  sender_id CHARACTER VARYING NOT NULL,
+  body CHARACTER VARYING NOT NULL,
+  acknowledged BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE core_user_notification_emails (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  user_id CHARACTER VARYING NOT NULL,
+  structure_id CHARACTER VARYING NOT NULL,
+  structure_type CHARACTER VARYING NOT NULL,
+  message_action CHARACTER VARYING NOT NULL,
+  link CHARACTER VARYING NOT NULL,
+  sender_id CHARACTER VARYING NOT NULL,
+  body CHARACTER VARYING NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id)
 );
 
@@ -89,7 +115,7 @@ CREATE TABLE core_trees (
   UNIQUE(code)
 );
 
-CREATE TABLE core_tre_levels (
+CREATE TABLE core_tree_levels (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
   tree_id CHARACTER VARYING NOT NULL,
@@ -101,11 +127,12 @@ CREATE TABLE core_tre_levels (
   UNIQUE(code)
 );
 
-CREATE TABLE core_tre_units (
+CREATE TABLE core_tree_units (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
   tree_id CHARACTER VARYING NOT NULL,
   parent_id CHARACTER VARYING,
+  permissions JSONB,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
@@ -155,9 +182,12 @@ CREATE TABLE core_config_languages (
   UNIQUE(code)
 );
 
-CREATE TABLE core_groups (
+CREATE TABLE core_group_permissions (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
+  tree_unit_id CHARACTER VARYING,
+  permissions JSONB,
+  wildcards JSONB,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
@@ -167,19 +197,19 @@ CREATE TABLE core_groups (
   UNIQUE(code)
 );
 
-CREATE TABLE core_grp_permissions (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  group_id CHARACTER VARYING NOT NULL,
-  structure_type CHARACTER VARYING NOT NULL,
-  structure_id CHARACTER VARYING NOT NULL,
-  permission_type integer NOT NULL,
-  condition_query CHARACTER VARYING,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id)
-);
+-- CREATE TABLE core_grp_permissions (
+--   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+--   group_id CHARACTER VARYING NOT NULL,
+--   structure_type CHARACTER VARYING NOT NULL,
+--   structure_id CHARACTER VARYING NOT NULL,
+--   permission_type integer NOT NULL,
+--   condition_query CHARACTER VARYING,
+--   created_by CHARACTER VARYING NOT NULL,
+--   created_at TIMESTAMPTZ NOT NULL,
+--   updated_by CHARACTER VARYING NOT NULL,
+--   updated_at TIMESTAMPTZ NOT NULL,
+--   PRIMARY KEY(id)
+-- );
 
 CREATE TABLE core_groups_users (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
@@ -200,6 +230,8 @@ CREATE TABLE core_schemas (
   module BOOLEAN DEFAULT FALSE NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   status CHARACTER VARYING DEFAULT 'processing' NOT NULL,
+  parent_id CHARACTER VARYING,
+  is_extension BOOLEAN,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
@@ -270,6 +302,7 @@ CREATE TABLE core_sch_fields (
   schema_id CHARACTER VARYING NOT NULL,
   field_type CHARACTER VARYING NOT NULL,
   multivalue BOOLEAN,
+  permissions JSONB,
   lookup_id CHARACTER VARYING,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
@@ -1002,11 +1035,11 @@ CREATE TRIGGER trg_replic_job_task_to_instances
 
 -- ALTER TABLE "core_trees" ADD FOREIGN KEY ("created_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
 -- ALTER TABLE "core_trees" ADD FOREIGN KEY ("updated_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
--- ALTER TABLE "core_tre_levels" ADD FOREIGN KEY ("created_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
--- ALTER TABLE "core_tre_levels" ADD FOREIGN KEY ("updated_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
--- ALTER TABLE "core_tre_units" ADD FOREIGN KEY ("created_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
--- ALTER TABLE "core_tre_units" ADD FOREIGN KEY ("updated_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
--- ALTER TABLE "core_tre_units" ADD FOREIGN KEY ("parent_id") REFERENCES "core_tre_units" ("id") ON DELETE CASCADE;
+-- ALTER TABLE "core_tree_levels" ADD FOREIGN KEY ("created_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
+-- ALTER TABLE "core_tree_levels" ADD FOREIGN KEY ("updated_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
+-- ALTER TABLE "core_tree_units" ADD FOREIGN KEY ("created_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
+-- ALTER TABLE "core_tree_units" ADD FOREIGN KEY ("updated_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
+-- ALTER TABLE "core_tree_units" ADD FOREIGN KEY ("parent_id") REFERENCES "core_tree_units" ("id") ON DELETE CASCADE;
 -- ALTER TABLE "core_currencies" ADD FOREIGN KEY ("created_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
 -- ALTER TABLE "core_currencies" ADD FOREIGN KEY ("updated_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
 -- ALTER TABLE "core_cry_rates" ADD FOREIGN KEY ("created_by") REFERENCES "core_users" ("id") ON DELETE CASCADE;
