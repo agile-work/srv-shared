@@ -123,12 +123,11 @@ func (r *Receiver) loadUsersByFollowers(users *[]string, message Message) error 
 
 // Validate get usernames from groups and followers
 func (r *Receiver) Validate(message Message) error {
-	// TODO: Validate if users already have an equal notification
-	// TODO: Validate if user has email enabled and notification already sent email
 	allUsersJSON, err := r.UsersToJSON()
 	if err != nil {
 		return err
 	}
+	// TODO: Refazer a query p levar em consideração a nova tabela de email
 	sql := `
 		SELECT
 			usrs.id AS id,
@@ -136,7 +135,7 @@ func (r *Receiver) Validate(message Message) error {
 			usrs.user_language_code AS user_language_code,
 			usrs.user_email AS user_email,
 			CASE
-				WHEN usrs.user_receive_emails != 'email_never'
+				WHEN usrs.user_receive_emails != 'never'
 				AND (
 					ntf.user_id IS NULL
 					OR ntf.email_sent = false
@@ -165,7 +164,7 @@ func (r *Receiver) Validate(message Message) error {
 			SELECT
 				ntf.user_id AS user_id,
 				max(ntf.email_sent::int)::boolean AS email_sent
-			FROM core_usr_notifications ntf
+			FROM core_user_notifications ntf
 			WHERE ntf.user_id IN (
 				SELECT *
 				FROM jsonb_to_recordset(
@@ -177,10 +176,9 @@ func (r *Receiver) Validate(message Message) error {
 			AND ntf.acknowledged = false
 			AND ntf.structure_id = '%s'
 			AND ntf.structure_type = '%s'
-			AND ntf.scope = '%s'
 			AND ntf.message_action = '%s'
 			AND ntf.link = '%s'
-			AND ntf.message_text = '%s'
+			AND ntf.body = '%s'
 			GROUP BY
 				ntf.user_id
 		) AS ntf
@@ -192,10 +190,9 @@ func (r *Receiver) Validate(message Message) error {
 		string(allUsersJSON),
 		message.StructureID,
 		message.StructureType,
-		message.Scope,
 		message.Action,
 		message.Link,
-		message.String(),
+		message.Body,
 	)
 	statement := builder.Raw(sql)
 	rows, err := db.Query(statement)

@@ -6,9 +6,13 @@ import (
 	"time"
 
 	shared "github.com/agile-work/srv-shared"
-	"github.com/agile-work/srv-shared/sql-builder/builder"
 	"github.com/agile-work/srv-shared/sql-builder/db"
 )
+
+// Emit creates a new realtime notification on the system
+func Emit(message Message, receiver Receiver) {
+	// TODO: Iimplementar as funcionalidades p emissão de notificações realtime
+}
 
 // New creates a new notification on the system
 func New(message Message, receiver Receiver, passthrough, forceEmail bool) {
@@ -27,52 +31,34 @@ func New(message Message, receiver Receiver, passthrough, forceEmail bool) {
 		}
 	}
 
-	// TODO: Emit to websocket
+	Emit(message, receiver)
 
-	now := time.Now()
 	for _, user := range receiver.allUsers {
-		sendEmail := (user.SendEmail && user.ReceiveEmails == "email_yes") || (forceEmail && user.ReceiveEmails == "email_only_required")
 		if user.Notify {
-			statemant := builder.Insert(
-				shared.TableCoreUsrNotifications,
-				"user_id",
-				"structure_id",
-				"structure_type",
-				"scope",
-				"message_action",
-				"link",
-				"sender",
-				"message_text",
-				"acknowledged",
-				"email_sent",
-				"created_by",
-				"created_at",
-				"updated_by",
-				"updated_at",
-			).Values(
-				user.UserID,
-				message.StructureID,
-				message.StructureType,
-				message.Scope,
-				message.Action,
-				message.Link,
-				message.Sender,
-				message.String(),
-				message.Ack,
-				sendEmail,
-				"307e481c-69c5-11e9-96a0-06ea2c43bb20",
-				now,
-				"307e481c-69c5-11e9-96a0-06ea2c43bb20",
-				now,
-			)
-
-			err := db.Exec(statemant)
+			message.UserID = user.UserID
+			_, err := db.InsertStruct(shared.TableCoreUserNotifications, &message)
 			if err != nil {
 				// TODO: log this erro to file
 				log.Println(err.Error())
 			}
 		}
-		if sendEmail {
+		if (user.SendEmail && user.ReceiveEmails == shared.NotificationsEmailAlways) || (forceEmail && user.ReceiveEmails == shared.NotificationsEmailRequired) {
+			_, err := db.InsertStruct(
+				shared.TableCoreUserNotificationEmails,
+				&message,
+				"user_id",
+				"structure_id",
+				"structure_type",
+				"message_action",
+				"link",
+				"sender_id",
+				"body",
+				"created_at",
+			)
+			if err != nil {
+				// TODO: log this erro to file
+				log.Println(err.Error())
+			}
 			// TODO: Send email
 			fmt.Println("email sent")
 		}

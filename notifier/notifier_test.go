@@ -30,12 +30,10 @@ func (suite *NotifierTestSuite) Test00001New() {
 	message := Message{
 		StructureID:   "f8962d76-7b57-11e9-8160-06ea2c43bb20",
 		StructureType: "instance",
-		Scope:         "contract",
 		Action:        "update_contract",
 		Link:          "http://localhost:8081/core/instances/f8962d76-7b57-11e9-8160-06ea2c43bb20",
 		Sender:        "Contract, Manager",
-		Body:          []byte("O contrato CTR001 foi atualizado pelo usuário Contract, Manager"),
-		EmailSent:     false,
+		Body:          "O contrato CTR001 foi atualizado pelo usuário Contract, Manager",
 		UserID:        "f03e9a26-7b4f-11e9-9a66-06ea2c43bb20",
 	}
 

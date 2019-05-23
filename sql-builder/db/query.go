@@ -96,7 +96,7 @@ func StructSelectQuery(table string, obj interface{}, conditions builder.Builder
 }
 
 // StructInsertQuery generates the insert query based on the struct fields
-func StructInsertQuery(table string, obj interface{}) (string, []interface{}) {
+func StructInsertQuery(table string, obj interface{}, insertableFields string) (string, []interface{}) {
 	v := reflect.ValueOf(obj).Elem()
 	t := reflect.TypeOf(obj).Elem()
 
@@ -105,7 +105,7 @@ func StructInsertQuery(table string, obj interface{}) (string, []interface{}) {
 	pkField := "id"
 	for i := 0; i < t.NumField(); i++ {
 		tag := t.Field(i).Tag
-		if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" {
+		if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" && (strings.Contains(insertableFields, tag.Get("sql")) || insertableFields == "") {
 			fields = append(fields, tag.Get("sql"))
 			value := v.Field(i).Interface()
 			if tag.Get("field") == "jsonb" {
@@ -126,12 +126,12 @@ func StructInsertQuery(table string, obj interface{}) (string, []interface{}) {
 }
 
 // StructMultipleInsertQuery generates the insert query based on the array of structs
-func StructMultipleInsertQuery(table string, obj interface{}) (string, []interface{}) {
+func StructMultipleInsertQuery(table string, obj interface{}, insertableFields string) (string, []interface{}) {
 	t := reflect.TypeOf(obj).Elem()
 	fields := []string{}
 	for i := 0; i < t.NumField(); i++ {
 		tag := t.Field(i).Tag
-		if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" {
+		if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" && (strings.Contains(insertableFields, tag.Get("sql")) || insertableFields == "") {
 			fields = append(fields, tag.Get("sql"))
 		}
 	}
@@ -146,7 +146,7 @@ func StructMultipleInsertQuery(table string, obj interface{}) (string, []interfa
 			args := []interface{}{}
 			for i := 0; i < valueStruct.Type().NumField(); i++ {
 				tag := valueStruct.Type().Field(i).Tag
-				if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" {
+				if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" && (strings.Contains(insertableFields, tag.Get("sql")) || insertableFields == "") {
 					value := valueStruct.Field(i).Interface()
 					if tag.Get("field") == "jsonb" {
 						value, _ = json.Marshal(value)

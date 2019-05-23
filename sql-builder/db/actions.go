@@ -40,16 +40,16 @@ func LoadStruct(table string, model interface{}, conditions builder.Builder) err
 }
 
 // InsertStruct insert struct values in the database table
-func InsertStruct(table string, model interface{}) (string, error) {
+func InsertStruct(table string, model interface{}, fields ...string) (string, error) {
 	var err error
 	id := ""
 	query := ""
 	values := []interface{}{}
 	if reflect.TypeOf(model).Kind() == reflect.Slice {
-		query, values = StructMultipleInsertQuery(table, model)
+		query, values = StructMultipleInsertQuery(table, model, strings.Join(fields, ","))
 		_, err = db.Exec(query, values...)
 	} else {
-		query, values = StructInsertQuery(table, model)
+		query, values = StructInsertQuery(table, model, strings.Join(fields, ","))
 		err = db.QueryRow(query, values...).Scan(&id)
 	}
 	printQueryIfError(err, query, values)
@@ -92,7 +92,9 @@ func Exec(statement builder.Builder) error {
 func Query(statement builder.Builder) (*sql.Rows, error) {
 	query := builder.NewQuery()
 	statement.Prepare(query)
-	return db.Query(query.String(), query.Value()...)
+	rows, err := db.Query(query.String(), query.Value()...)
+	printQueryIfError(err, query.String(), query.Value())
+	return rows, err
 }
 
 // printQueryIfError show information about query execution if has error
