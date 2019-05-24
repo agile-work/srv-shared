@@ -119,7 +119,7 @@ CREATE TABLE core_trees (
 CREATE TABLE core_tree_levels (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
-  tree_id CHARACTER VARYING NOT NULL,
+  tree_code CHARACTER VARYING NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
@@ -131,7 +131,8 @@ CREATE TABLE core_tree_levels (
 CREATE TABLE core_tree_units (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
-  tree_id CHARACTER VARYING NOT NULL,
+  tree_code CHARACTER VARYING NOT NULL,
+  path CHARACTER VARYING NOT NULL,
   permission_scope CHARACTER VARYING,
   permissions JSONB,
   active BOOLEAN DEFAULT FALSE NOT NULL,
@@ -140,7 +141,7 @@ CREATE TABLE core_tree_units (
   updated_by CHARACTER VARYING NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
-  UNIQUE(tree_id, code)
+  UNIQUE(tree_code, code)
 );
 
 CREATE TABLE core_currencies (
