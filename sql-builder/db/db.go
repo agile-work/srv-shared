@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/satori/go.uuid"
+
 	//postgresql lib
 	_ "github.com/lib/pq"
 )
@@ -35,4 +37,13 @@ func Connect(host string, port int, user, password, dbname string, sslmode bool)
 // Close database connection
 func Close() {
 	db.Close()
+}
+
+// UUID retuns a string with the uuid
+func UUID() string {
+	u2, err := uuid.NewV1()
+	if err != nil {
+		return ""
+	}
+	return u2.String()
 }

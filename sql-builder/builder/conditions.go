@@ -1,5 +1,7 @@
 package builder
 
+import "fmt"
+
 func buildCond(q Query, pred string, cond ...Builder) error {
 	for i, c := range cond {
 		if i > 0 {
@@ -71,7 +73,7 @@ func LowerOrEqual(column string, value interface{}) Builder {
 	})
 }
 
-// Equal crates a equal comparison
+// Equal creates an equal comparison
 func Equal(column string, value interface{}) Builder {
 	return PrepareFunc(func(q Query) error {
 		if value == nil {
@@ -80,6 +82,22 @@ func Equal(column string, value interface{}) Builder {
 			return nil
 		}
 		q.WriteString(column)
+		q.WriteString(" = ?")
+		q.WriteValue(value)
+		return nil
+	})
+}
+
+// JSONEqual creates an equal comparison
+func JSONEqual(column, field string, value interface{}) Builder {
+	return PrepareFunc(func(q Query) error {
+		col := fmt.Sprintf("(%s ->> '%s')", column, field)
+		if value == nil {
+			q.WriteString(col)
+			q.WriteString(" IS NULL")
+			return nil
+		}
+		q.WriteString(col)
 		q.WriteString(" = ?")
 		q.WriteValue(value)
 		return nil

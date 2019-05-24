@@ -11,11 +11,13 @@ type Statement struct {
 	Type          string
 	Table         string
 	Columns       []string
-	JSONColumns   map[string][]string
 	WhereCond     Builder
 	JoinTable     []Builder
 	Data          []interface{}
 	ReturnColumns []string
+	JSONColumns   map[string][]string
+	JSONObject    string
+	JSONWhereCond Builder
 }
 
 // Values defines the input data to insert and update
@@ -32,6 +34,8 @@ func (s *Statement) Prepare(q Query) error {
 		err = prepareSelect(s, q)
 	case "insert":
 		err = prepareInsert(s, q)
+	case "insert_json":
+		err = prepareJSONInsert(s, q)
 	case "update":
 		err = prepareUpdate(s, q)
 	case "delete":
@@ -48,6 +52,32 @@ func (s *Statement) Prepare(q Query) error {
 	q.WriteString(queryPlaceHolder)
 
 	return err
+}
+
+func prepareJSONInsert(s *Statement, q Query) error {
+	q.WriteString("UPDATE ")
+	q.WriteString(s.Table)
+	q.WriteString(" SET ")
+
+	jsonColumn := ""
+	if len(s.Columns) > 0 {
+		jsonColumn = s.Columns[0]
+	}
+	q.WriteString(jsonColumn)
+	q.WriteString(" = ")
+	q.WriteString(jsonColumn)
+	q.WriteString(" || '")
+	q.WriteString(s.JSONObject)
+	q.WriteString("' ")
+
+	if s.WhereCond != nil {
+		err := s.WhereCond.Prepare(q)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func prepareSelect(s *Statement, q Query) error {

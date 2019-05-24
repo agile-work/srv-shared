@@ -1,5 +1,0 @@
-Host     = "cryo.cdnm8viilrat.us-east-2.rds-preview.amazonaws.com"
-Port     = 5432
-User     = "cryoadmin"
-Password = "x3FhcrWDxnxCq9p"
-DBName   = "cryo"
