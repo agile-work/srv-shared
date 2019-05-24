@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS core_users CASCADE;
-DROP TABLE IF EXISTS core_permission_users_instances CASCADE;
+DROP TABLE IF EXISTS core_instance_premissions CASCADE;
 DROP TABLE IF EXISTS core_user_notifications CASCADE;
 DROP TABLE IF EXISTS core_user_notification_emails CASCADE;
 DROP TABLE IF EXISTS core_trees CASCADE;
@@ -8,8 +8,7 @@ DROP TABLE IF EXISTS core_tree_units CASCADE;
 DROP TABLE IF EXISTS core_currencies CASCADE;
 DROP TABLE IF EXISTS core_cry_rates CASCADE;
 DROP TABLE IF EXISTS core_config_languages CASCADE;
-DROP TABLE IF EXISTS core_groups CASCADE;
-DROP TABLE IF EXISTS core_grp_permissions CASCADE;
+DROP TABLE IF EXISTS core_group_permissions CASCADE;
 DROP TABLE IF EXISTS core_groups_users CASCADE;
 DROP TABLE IF EXISTS core_schemas CASCADE;
 DROP TABLE IF EXISTS core_sch_followers CASCADE;
@@ -33,6 +32,7 @@ DROP TABLE IF EXISTS core_job_instances CASCADE;
 DROP TABLE IF EXISTS core_job_task_instances CASCADE;
 DROP TABLE IF EXISTS core_services CASCADE;
 DROP TABLE IF EXISTS core_system_params CASCADE;
+
 DROP VIEW IF EXISTS core_v_user_groups CASCADE;
 DROP VIEW IF EXISTS core_v_group_users CASCADE;
 DROP VIEW IF EXISTS core_v_users_and_groups CASCADE;
@@ -62,10 +62,11 @@ CREATE TABLE core_users (
 
 CREATE TABLE core_instance_premissions (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  entity_id CHARACTER VARYING NOT NULL,
-  entity_type CHARACTER VARYING NOT NULL,
+  user_id CHARACTER VARYING NOT NULL,
   instance_id CHARACTER VARYING NOT NULL,
   instance_type CHARACTER VARYING NOT NULL,
+  source_type CHARACTER VARYING NOT NULL, -- manual or field
+  source_id CHARACTER VARYING, -- null or field_id
   permissions JSONB,  
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
@@ -182,10 +183,12 @@ CREATE TABLE core_config_languages (
   UNIQUE(code)
 );
 
-CREATE TABLE core_group_permissions (
+CREATE TABLE core_groups (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
   tree_unit_id CHARACTER VARYING,
+  tree_unit_scope CHARACTER VARYING,
+  users JSONB,
   permissions JSONB,
   wildcards JSONB,
   active BOOLEAN DEFAULT FALSE NOT NULL,
@@ -197,31 +200,17 @@ CREATE TABLE core_group_permissions (
   UNIQUE(code)
 );
 
--- CREATE TABLE core_grp_permissions (
+-- CREATE TABLE core_groups_users (
 --   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+--   user_id CHARACTER VARYING NOT NULL,
 --   group_id CHARACTER VARYING NOT NULL,
---   structure_type CHARACTER VARYING NOT NULL,
---   structure_id CHARACTER VARYING NOT NULL,
---   permission_type integer NOT NULL,
---   condition_query CHARACTER VARYING,
 --   created_by CHARACTER VARYING NOT NULL,
 --   created_at TIMESTAMPTZ NOT NULL,
 --   updated_by CHARACTER VARYING NOT NULL,
 --   updated_at TIMESTAMPTZ NOT NULL,
---   PRIMARY KEY(id)
+--   PRIMARY KEY(id),
+--   UNIQUE(user_id, group_id)
 -- );
-
-CREATE TABLE core_groups_users (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  user_id CHARACTER VARYING NOT NULL,
-  group_id CHARACTER VARYING NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(user_id, group_id)
-);
 
 CREATE TABLE core_schemas (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
