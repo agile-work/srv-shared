@@ -73,7 +73,7 @@ CREATE TABLE core_instance_premissions (
   updated_by CHARACTER VARYING NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
-  UNIQUE(entity_id, instance_id)
+  UNIQUE(user_id, instance_id)
 );
 
 CREATE TABLE core_user_notifications (
@@ -132,7 +132,7 @@ CREATE TABLE core_tree_units (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
   tree_code CHARACTER VARYING NOT NULL,
-  path CHARACTER VARYING NOT NULL,
+  path LTREE NOT NULL,
   permission_scope CHARACTER VARYING,
   permissions JSONB,
   active BOOLEAN DEFAULT FALSE NOT NULL,
@@ -294,6 +294,7 @@ CREATE TABLE core_sch_fields (
   multivalue BOOLEAN,
   permissions JSONB,
   lookup_id CHARACTER VARYING,
+  groups JSONB,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
@@ -850,6 +851,29 @@ VALUES (
   'Português do Brasil',
   'pt-br'
 );
+
+INSERT INTO core_jobs VALUES ('97273448-0600-4987-96e9-796ae54c3409', 'job_system_create_schema', 'system', '[{"key": "schema_id"}, {"key": "schema_code"}]', 60, true, '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 16:23:55.546555+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:12:21.364253+00');
+INSERT INTO core_jobs VALUES ('1dc914d8-dbdf-4b21-8755-4034bf01feac', 'job_system_delete_schema', 'system', '[{"key": "schema_id"}]', 60, true, '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:23:15.04792+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:23:15.04792+00');
+
+INSERT INTO core_job_tasks VALUES ('2b4c21fc-df29-499d-a544-b78152f5d1e2', 'sf0002', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, 'af65df49-e270-4dcd-a45a-13179c2b4fc8', 'null', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/containers/{task.section.id}/section/structures', '{"schema_id":"{job.schema_id}","page_id":"{task.page.id}","container_id":"{task.section.id}","container_type":"section","structure_type":"field","structure_id":"{task.field02.id}","position_row":0,"position_column":0,"width":0,"height":0}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:20:33.887723+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:20:33.887723+00');
+INSERT INTO core_job_tasks VALUES ('af65df49-e270-4dcd-a45a-13179c2b4fc8', 'section', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, 'a2cffeb8-2aa8-4092-98c5-cab52fd6d397', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/sections', '{"name":"Geral","code":"general","description":"descrição da sessão","schema_id":"{job.schema_id}","page_id":"{task.page.id}"}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:22:47.72088+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:42:49.659137+00');
+INSERT INTO core_job_tasks VALUES ('6647f5e9-f1b7-4e41-8cea-c38a744a3678', 'create_table', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, '', 'null', 'exec_query', 'local', 'CREATE TABLE cst_{job.schema_code} (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  data JSONB,
+  created_by CHARACTER VARYING NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_by CHARACTER VARYING NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY(id)
+);', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 16:27:14.492063+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-16 12:47:26.594925+00');
+INSERT INTO core_job_tasks VALUES ('3b25010f-4e50-4b91-84d4-6b0d19f1c3ae', 'schema', '97273448-0600-4987-96e9-796ae54c3409', 3, 60, '', 'null', 'api_patch', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}', '{"status": "completed"}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-16 13:35:23.655347+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-16 13:38:11.749239+00');
+INSERT INTO core_job_tasks VALUES ('a2cffeb8-2aa8-4092-98c5-cab52fd6d397', 'page', '97273448-0600-4987-96e9-796ae54c3409', 2, 60, '', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages', '{"name":"Geral","code":"pag_general","description":"Descrição da página","schema_id":"{job.schema_id}","page_type":"form","active":true}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 17:15:59.672439+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:23:40.063537+00');
+INSERT INTO core_job_tasks VALUES ('c26fdc64-7726-4d6b-aea6-20bb8f9f5a51', 'field01', '97273448-0600-4987-96e9-796ae54c3409', 1, 60, '', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/fields', '{"name":"Nome","code":"name","description":"descrição do campo nome","schema_id":"{job.schema_id}","field_type":"text","lookup_id":"","multivalue":false,"active":true}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 17:07:24.85265+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:46:21.110233+00');
+INSERT INTO core_job_tasks VALUES ('5a774097-ca92-4244-9467-b53d66d9c1ec', 'field02', '97273448-0600-4987-96e9-796ae54c3409', 1, 60, '', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/fields', '{"name":"Código","code":"code","description":"descrição do código","schema_id":"{job.schema_id}","field_type":"text","lookup_id":"","multivalue":false,"active":true}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 16:59:18.560389+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:46:49.070556+00');
+INSERT INTO core_job_tasks VALUES ('22ed3aa5-d41d-47a4-ba93-ce097446b883', 'get_schema', '1dc914d8-dbdf-4b21-8755-4034bf01feac', 0, 60, '', '[{"key": "schema_code", "type": "self", "field": "data.code"}]', 'api_get', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}', '', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:53:54.257669+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:14:49.758612+00');
+INSERT INTO core_job_tasks VALUES ('74c1d6c0-82d7-44d1-aa9e-4b26b2031947', 'sf0001', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, 'af65df49-e270-4dcd-a45a-13179c2b4fc8', 'null', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/containers/{task.section.id}/section/structures', '{"schema_id":"{job.schema_id}","page_id":"{task.page.id}","container_id":"{task.section.id}","container_type":"section","structure_type":"field","structure_id":"{task.field01.id}","position_row":0,"position_column":0,"width":0,"height":0}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:40:06.424041+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:02:33.694846+00');
+INSERT INTO core_job_tasks VALUES ('ace1845b-bf32-467e-aa3a-98fc5131063e', 'delete_table', '1dc914d8-dbdf-4b21-8755-4034bf01feac', 0, 60, '22ed3aa5-d41d-47a4-ba93-ce097446b883', 'null', 'exec_query', 'local', 'DROP TABLE IF EXISTS cst_{task.get_schema.schema_code};', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:25:48.27173+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:24:42.702444+00');
+INSERT INTO core_job_tasks VALUES ('6ddde82d-25b1-49cd-ba18-37d4d067bbcc', 'delete_schema', '1dc914d8-dbdf-4b21-8755-4034bf01feac', 1, 60, '', 'null', 'api_delete', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}', '', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:02:03.659126+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:14:33.18574+00');
 
 CREATE OR REPLACE FUNCTION trg_func_replic_translations() RETURNS TRIGGER AS $$
   DECLARE
