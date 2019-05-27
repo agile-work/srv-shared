@@ -49,7 +49,7 @@ func InsertStruct(table string, model interface{}, fields ...string) (string, er
 		query, values = StructMultipleInsertQuery(table, model, strings.Join(fields, ","))
 		_, err = db.Exec(query, values...)
 	} else {
-		query, values = StructInsertQuery(table, model, strings.Join(fields, ","))
+		query, values = StructInsertQuery(table, model, strings.Join(fields, ","), false).Query()
 		err = db.QueryRow(query, values...).Scan(&id)
 	}
 	printQueryIfError(err, query, values)

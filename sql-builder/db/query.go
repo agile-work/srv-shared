@@ -96,7 +96,7 @@ func StructSelectQuery(table string, obj interface{}, conditions builder.Builder
 }
 
 // StructInsertQuery generates the insert query based on the struct fields
-func StructInsertQuery(table string, obj interface{}, insertableFields string) (string, []interface{}) {
+func StructInsertQuery(table string, obj interface{}, insertableFields string, insertPKField bool) *builder.Statement {
 	v := reflect.ValueOf(obj).Elem()
 	t := reflect.TypeOf(obj).Elem()
 
@@ -105,7 +105,7 @@ func StructInsertQuery(table string, obj interface{}, insertableFields string) (
 	pkField := "id"
 	for i := 0; i < t.NumField(); i++ {
 		tag := t.Field(i).Tag
-		if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" && (strings.Contains(insertableFields, tag.Get("sql")) || insertableFields == "") {
+		if tag.Get("sql") != "" && (tag.Get("pk") != "true" || insertPKField) && tag.Get("table") == "" && (contains(insertableFields, tag.Get("sql")) || insertableFields == "") {
 			fields = append(fields, tag.Get("sql"))
 			value := v.Field(i).Interface()
 			if tag.Get("field") == "jsonb" {
@@ -118,11 +118,7 @@ func StructInsertQuery(table string, obj interface{}, insertableFields string) (
 		}
 	}
 
-	statement := builder.Insert(table, fields...).Values(args...).Return(pkField)
-	query := builder.NewQuery()
-	statement.Prepare(query)
-
-	return query.String(), query.Value()
+	return builder.Insert(table, fields...).Values(args...).Return(pkField)
 }
 
 // StructMultipleInsertQuery generates the insert query based on the array of structs
@@ -131,7 +127,7 @@ func StructMultipleInsertQuery(table string, obj interface{}, insertableFields s
 	fields := []string{}
 	for i := 0; i < t.NumField(); i++ {
 		tag := t.Field(i).Tag
-		if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" && (strings.Contains(insertableFields, tag.Get("sql")) || insertableFields == "") {
+		if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" && (contains(insertableFields, tag.Get("sql")) || insertableFields == "") {
 			fields = append(fields, tag.Get("sql"))
 		}
 	}
@@ -146,7 +142,7 @@ func StructMultipleInsertQuery(table string, obj interface{}, insertableFields s
 			args := []interface{}{}
 			for i := 0; i < valueStruct.Type().NumField(); i++ {
 				tag := valueStruct.Type().Field(i).Tag
-				if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" && (strings.Contains(insertableFields, tag.Get("sql")) || insertableFields == "") {
+				if tag.Get("sql") != "" && tag.Get("pk") != "true" && tag.Get("table") == "" && (contains(insertableFields, tag.Get("sql")) || insertableFields == "") {
 					value := valueStruct.Field(i).Interface()
 					if tag.Get("field") == "jsonb" {
 						value, _ = json.Marshal(value)
@@ -158,10 +154,7 @@ func StructMultipleInsertQuery(table string, obj interface{}, insertableFields s
 		}
 	}
 
-	query := builder.NewQuery()
-	statement.Prepare(query)
-
-	return query.String(), query.Value()
+	return statement.Query()
 }
 
 // StructUpdateQuery generates the update query based on the struct fields
@@ -174,7 +167,7 @@ func StructUpdateQuery(table string, obj interface{}, updatableFields string, co
 
 	for i := 0; i < t.NumField(); i++ {
 		tag := t.Field(i).Tag
-		if tag.Get("sql") != "" && tag.Get("pk") != "true" && (strings.Contains(updatableFields, tag.Get("sql")) || updatableFields == "") {
+		if tag.Get("sql") != "" && tag.Get("pk") != "true" && (contains(updatableFields, tag.Get("sql")) || updatableFields == "") {
 			fields = append(fields, tag.Get("sql"))
 			value := v.Field(i).Interface()
 			if tag.Get("field") == "jsonb" {
@@ -189,17 +182,24 @@ func StructUpdateQuery(table string, obj interface{}, updatableFields string, co
 	}
 
 	statement := builder.Update(table, fields...).Values(args...).Where(conditions)
-	query := builder.NewQuery()
-	statement.Prepare(query)
+	str, vals := statement.Query()
 
-	return query.String(), query.Value(), nil
+	return str, vals, nil
 }
 
 // StructDeleteQuery generates the delete query based on the struct fields
 func StructDeleteQuery(table string, conditions builder.Builder) (string, []interface{}, error) {
 	statement := builder.Delete(table).Where(conditions)
-	query := builder.NewQuery()
-	statement.Prepare(query)
+	str, vals := statement.Query()
 
-	return query.String(), query.Value(), nil
+	return str, vals, nil
+}
+
+func contains(fields, field string) bool {
+	for _, f := range strings.Split(fields, ",") {
+		if f == field {
+			return true
+		}
+	}
+	return false
 }

@@ -2,7 +2,7 @@ package shared
 
 // System consts
 const (
-	// Tables and Views
+	// Tables
 	TableCoreTrees                         string = "core_trees"
 	TableCoreTreeLevels                    string = "core_tree_levels"
 	TableCoreTreeUnits                     string = "core_tree_units"
@@ -36,13 +36,18 @@ const (
 	TableCoreJobTaskInstances              string = "core_job_task_instances"
 	TableCoreServices                      string = "core_services"
 	TableCoreSystemParams                  string = "core_system_params"
-	ViewCoreJobFollowers                   string = "core_v_job_followers"
-	ViewCoreJobInstances                   string = "core_v_job_instance"
-	ViewCoreJobTaskInstances               string = "core_v_job_task_instance"
-	ViewCoreUsersAndGroups                 string = "core_v_users_and_groups"
-	ViewCoreSchemaModules                  string = "core_v_sch_modules"
-	ViewCoreUserGroups                     string = "core_v_user_groups"
-	ViewCoreGroupUsers                     string = "core_v_group_users"
+
+	// Views
+	ViewCoreJobFollowers     string = "core_v_job_followers"
+	ViewCoreJobInstances     string = "core_v_job_instance"
+	ViewCoreJobTaskInstances string = "core_v_job_task_instance"
+	ViewCoreUsersAndGroups   string = "core_v_users_and_groups"
+	ViewCoreSchemaModules    string = "core_v_sch_modules"
+	ViewCoreUserGroups       string = "core_v_user_groups"
+	ViewCoreGroupUsers       string = "core_v_group_users"
+
+	// Custom schemas
+	TableCustomResources string = "cst_resources"
 
 	// Schema status
 	SchemaStatusProcessing string = "processing"
@@ -100,7 +105,22 @@ const (
 	SysParamAPILoginEmail    string = "api_login_email"
 	SysParamAPILoginPassword string = "api_login_password"
 
+	// Notifications email delivery
 	NotificationsEmailAlways   string = "always"
 	NotificationsEmailNever    string = "never"
 	NotificationsEmailRequired string = "required"
+
+	// Security structures types
+	SecurityStructureField   string = "field"
+	SecurityStructureWidget  string = "widget"
+	SecurityStructureSection string = "section"
+
+	// Fields types
+	FieldText          string = "text"
+	FieldNumber        string = "number"
+	FieldDate          string = "date"
+	FieldMoney         string = "money"
+	FieldLookupTree    string = "lookup_tree"
+	FieldLookupStatic  string = "lookup_static"
+	FieldLookupDynamic string = "lookup_dynamic"
 )

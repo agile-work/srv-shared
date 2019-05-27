@@ -28,7 +28,26 @@ func InsertStructToJSON(column, table string, object interface{}, conditions bui
 }
 
 // UpdateStructToJSON update an existing object in the json column
-func UpdateStructToJSON(jsonObjectID, instanceID, column, table string, object interface{}) error {
+func UpdateStructToJSON(instanceID, column, table string, object interface{}) error {
+	jsonBytes, err := json.Marshal(object)
+	if err != nil {
+		return err
+	}
+
+	sql := fmt.Sprintf(`update %s set
+		%s = %s || '%s'
+  		where id = %s;`, table, column, column, string(jsonBytes), instanceID)
+
+	statement := builder.Raw(sql)
+	query := builder.NewQuery()
+	statement.Prepare(query)
+
+	_, err = db.Exec(query.String(), query.Value()...)
+	return err
+}
+
+// UpdateStructToJSONArray update an existing object in the json array column
+func UpdateStructToJSONArray(jsonObjectID, instanceID, column, table string, object interface{}) error {
 	jsonBytes, err := json.Marshal(object)
 	if err != nil {
 		return err

@@ -20,6 +20,13 @@ type Statement struct {
 	JSONWhereCond Builder
 }
 
+// Query returns query as a string with an array with values
+func (s *Statement) Query() (string, []interface{}) {
+	query := NewQuery()
+	s.Prepare(query)
+	return query.String(), query.Value()
+}
+
 // Values defines the input data to insert and update
 func (s *Statement) Values(values ...interface{}) *Statement {
 	s.Data = append(s.Data, values...)
