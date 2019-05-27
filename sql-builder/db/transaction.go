@@ -9,11 +9,11 @@ import (
 // Transaction is an database transaction.
 type Transaction struct {
 	tx         *sql.Tx
-	statements []builder.Statement
+	statements []*builder.Statement
 }
 
 // Add new statement to be executed
-func (t *Transaction) Add(statement builder.Statement) {
+func (t *Transaction) Add(statement *builder.Statement) {
 	t.statements = append(t.statements, statement)
 }
 

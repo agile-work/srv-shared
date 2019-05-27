@@ -11,7 +11,9 @@ func Select(columns ...string) *Statement {
 
 // JSON defines statement columns from a json column with defined fields
 func (s *Statement) JSON(column string, fields ...string) *Statement {
-	s.JSONColumns[column] = append(s.JSONColumns[column], fields...)
+	if len(fields) > 0 {
+		s.JSONColumns[column] = append(s.JSONColumns[column], fields...)
+	}
 	return s
 }
 
