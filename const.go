@@ -38,14 +38,16 @@ const (
 	TableCoreSystemParams                  string = "core_system_params"
 
 	// Views
-	ViewCoreJobFollowers         string = "core_v_job_followers"
-	ViewCoreJobInstances         string = "core_v_job_instance"
-	ViewCoreJobTaskInstances     string = "core_v_job_task_instance"
-	ViewCoreUsersAndGroups       string = "core_v_users_and_groups"
-	ViewCoreSchemaModules        string = "core_v_sch_modules"
-	ViewCoreUserGroups           string = "core_v_user_groups"
-	ViewCoreGroupUsers           string = "core_v_group_users"
-	ViewCoreStructurePermissions string = "core_v_structure_permissions"
+	ViewCoreJobFollowers             string = "core_v_job_followers"
+	ViewCoreJobInstances             string = "core_v_job_instance"
+	ViewCoreJobTaskInstances         string = "core_v_job_task_instance"
+	ViewCoreUsersAndGroups           string = "core_v_users_and_groups"
+	ViewCoreSchemaModules            string = "core_v_sch_modules"
+	ViewCoreUserGroups               string = "core_v_user_groups"
+	ViewCoreGroupUsers               string = "core_v_group_users"
+	ViewCoreUserStructurePermissions string = "core_v_user_structure_permissions"
+	ViewCoreStructurePermissions     string = "core_v_structure_permissions"
+	ViewCoreUserAllPermissions       string = "core_v_user_all_permissions"
 
 	// Custom schemas
 	TableCustomResources string = "cst_resources"

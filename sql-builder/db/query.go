@@ -35,15 +35,15 @@ func parseSelectStruct(table, alias string, obj interface{}, embedded bool) ([]s
 	for i := 0; i < element.NumField(); i++ {
 		tag := element.Field(i).Tag
 		if tag.Get("sql") != "" && tag.Get("table") == "" && tag.Get("select") != "false" {
-			columnName := fmt.Sprintf("%s.%s AS %s", table, tag.Get("sql"), tag.Get("json"))
+			columnName := fmt.Sprintf("%s.%s AS %s", table, tag.Get("sql"), cleanTagJSON(tag.Get("json")))
 			if embedded {
-				columnName = fmt.Sprintf("%s.%s AS %s__%s", alias, tag.Get("sql"), alias, tag.Get("json"))
+				columnName = fmt.Sprintf("%s.%s AS %s__%s", alias, tag.Get("sql"), alias, cleanTagJSON(tag.Get("json")))
 			}
 			fields = append(fields, columnName)
 		} else if tag.Get("sql") != "" && tag.Get("table") != "" {
-			columnName := fmt.Sprintf("%s.%s AS %s", tag.Get("alias"), tag.Get("sql"), tag.Get("json"))
+			columnName := fmt.Sprintf("%s.%s AS %s", tag.Get("alias"), tag.Get("sql"), cleanTagJSON(tag.Get("json")))
 			if embedded {
-				columnName = fmt.Sprintf("%s_%s.%s AS %s__%s", alias, tag.Get("alias"), tag.Get("sql"), alias, tag.Get("json"))
+				columnName = fmt.Sprintf("%s_%s.%s AS %s__%s", alias, tag.Get("alias"), tag.Get("sql"), alias, cleanTagJSON(tag.Get("json")))
 			}
 			fields = append(fields, columnName)
 			joinTable := fmt.Sprintf("%s %s", tag.Get("table"), tag.Get("alias"))
@@ -202,4 +202,8 @@ func contains(fields, field string) bool {
 		}
 	}
 	return false
+}
+
+func cleanTagJSON(tag string) string {
+	return strings.Split(tag, ",")[0]
 }

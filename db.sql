@@ -67,7 +67,7 @@ CREATE TABLE core_instance_premissions (
   instance_type CHARACTER VARYING NOT NULL,
   source_type CHARACTER VARYING NOT NULL, -- manual or field
   source_id CHARACTER VARYING, -- null or field_id
-  permissions JSONB,  
+  permissions JSONB DEFAULT '[]'::JSONB NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE core_tree_units (
   tree_code CHARACTER VARYING NOT NULL,
   path LTREE NOT NULL,
   permission_scope CHARACTER VARYING,
-  permissions JSONB,
+  permissions JSONB DEFAULT '[]'::JSONB NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
@@ -189,9 +189,9 @@ CREATE TABLE core_groups (
   code CHARACTER VARYING NOT NULL,
   tree_unit_id CHARACTER VARYING,
   tree_unit_permission_scope CHARACTER VARYING,
-  users JSONB,
-  permissions JSONB,
-  wildcards JSONB,
+  users JSONB DEFAULT '[]'::JSONB NOT NULL,
+  permissions JSONB DEFAULT '[]'::JSONB NOT NULL,
+  wildcards JSONB DEFAULT '[]'::JSONB NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
@@ -292,9 +292,9 @@ CREATE TABLE core_sch_fields (
   schema_id CHARACTER VARYING NOT NULL,
   field_type CHARACTER VARYING NOT NULL,
   multivalue BOOLEAN,
-  permissions JSONB,
+  permissions JSONB DEFAULT '[]'::JSONB NOT NULL,
   lookup_id CHARACTER VARYING,
-  groups JSONB,
+  groups JSONB DEFAULT '[]'::JSONB NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
@@ -555,7 +555,7 @@ CREATE TABLE core_system_params (
 CREATE VIEW core_v_user_groups AS
   SELECT
     core_groups.id AS id,
-    core_groups_users.user_id AS user_id,
+    jsonb_array_elements(core_groups.users)->>'id' AS user_id,
     core_groups.code AS code,
     core_translations_name.value AS name,
     core_translations_description.value AS description,
@@ -566,8 +566,6 @@ CREATE VIEW core_v_user_groups AS
     core_groups.updated_by AS updated_by,
     core_groups.updated_at AS updated_at
   FROM core_groups
-  JOIN core_groups_users
-  ON core_groups_users.group_id = core_groups.id
   JOIN core_translations core_translations_name
   ON core_translations_name.structure_id = core_groups.id
   AND core_translations_name.structure_field = 'name'
@@ -579,12 +577,13 @@ CREATE VIEW core_v_user_groups AS
 CREATE VIEW core_v_group_users AS
   SELECT
     core_users.id AS id,
-    core_groups_users.group_id AS group_id,
+    core_groups.id AS group_id,
     core_users.username AS username,
     core_users.first_name AS first_name,
     core_users.last_name AS last_name,
     core_users.email AS email,
     core_users.password AS password,
+    core_users.receive_emails AS receive_emails,
     core_users.language_code AS language_code,
     core_users.active AS active,
     core_users.created_by AS created_by,
@@ -592,8 +591,8 @@ CREATE VIEW core_v_group_users AS
     core_users.updated_by AS updated_by,
     core_users.updated_at AS updated_at
   FROM core_users
-  JOIN core_groups_users
-  ON core_groups_users.user_id = core_users.id;
+  JOIN core_groups
+  ON core_groups.users @> ('[{"id":"' || core_users.id || '"}]')::JSONB
 
 CREATE VIEW core_v_users_and_groups AS 
   SELECT * FROM (
@@ -653,20 +652,26 @@ CREATE VIEW core_v_sch_modules AS
 
 CREATE VIEW core_v_job_followers AS 
   SELECT
-    ug.id AS id,
-    followers.job_id AS job_id,
+    flw.id AS id,
+    flw.job_id AS job_id,
     ug.name AS name,
     ug.language_code AS language_code,
+    flw.follower_id AS follower_id,
     ug.ug_type AS follower_type,
     ug.active AS active,
-    followers.created_by AS created_by,
-    followers.created_at AS created_at,
-    followers.updated_by AS updated_by,
-    followers.updated_at AS updated_at
-  FROM core_jobs_followers AS followers
+    flw.created_by AS created_by,
+    flw.created_at AS created_at
+  FROM (
+    SELECT
+      jsonb_array_elements(job.followers)->>'id' AS id,
+      jsonb_array_elements(job.followers)->>'follower_id' AS follower_id,
+      job.id AS job_id,
+      job.created_by AS created_by,
+      job.created_at AS created_at
+    FROM core_jobs AS job
+  ) flw
   JOIN core_v_users_and_groups AS ug
-  ON ug.id = followers.follower_id
-  AND ug.ug_type = followers.follower_type;
+  ON ug.id = flw.follower_id;
 
 CREATE VIEW core_v_job_instance AS
   SELECT
@@ -859,7 +864,7 @@ INSERT INTO core_job_tasks VALUES ('2b4c21fc-df29-499d-a544-b78152f5d1e2', 'sf00
 INSERT INTO core_job_tasks VALUES ('af65df49-e270-4dcd-a45a-13179c2b4fc8', 'section', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, 'a2cffeb8-2aa8-4092-98c5-cab52fd6d397', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/sections', '{"name":"Geral","code":"general","description":"descrição da sessão","schema_id":"{job.schema_id}","page_id":"{task.page.id}"}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:22:47.72088+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:42:49.659137+00');
 INSERT INTO core_job_tasks VALUES ('6647f5e9-f1b7-4e41-8cea-c38a744a3678', 'create_table', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, '', 'null', 'exec_query', 'local', 'CREATE TABLE cst_{job.schema_code} (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  data JSONB,
+  data JSONB DEFAULT '[]'::JSONB NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
