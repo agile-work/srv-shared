@@ -18,6 +18,7 @@ type Statement struct {
 	JSONColumns   map[string][]string
 	JSONObject    string
 	JSONWhereCond Builder
+	RawQuery      string
 }
 
 // Query returns query as a string with an array with values
@@ -37,6 +38,8 @@ func (s *Statement) Values(values ...interface{}) *Statement {
 func (s *Statement) Prepare(q Query) error {
 	var err error
 	switch s.Type {
+	case "raw":
+		err = prepareRaw(s, q)
 	case "select":
 		err = prepareSelect(s, q)
 	case "insert":
@@ -59,6 +62,12 @@ func (s *Statement) Prepare(q Query) error {
 	q.WriteString(queryPlaceHolder)
 
 	return err
+}
+
+func prepareRaw(s *Statement, q Query) error {
+	q.WriteString(s.RawQuery)
+	q.WriteValue(s.Data...)
+	return nil
 }
 
 func prepareJSONInsert(s *Statement, q Query) error {

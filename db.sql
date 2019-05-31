@@ -148,28 +148,14 @@ CREATE TABLE core_currencies (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
+  name JSONB DEFAULT '{}'::JSONB NOT NULL,
+  rates JSONB DEFAULT '[]'::JSONB NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_by CHARACTER VARYING NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
-);
-
-CREATE TABLE core_cry_rates (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  from_currency_id CHARACTER VARYING NOT NULL,
-  to_currency_id CHARACTER VARYING NOT NULL,
-  from_currency_code CHARACTER VARYING NOT NULL,
-  to_currency_code CHARACTER VARYING NOT NULL,
-  value integer NOT NULL,
-  start_at TIMESTAMPTZ NOT NULL,
-  end_at TIMESTAMPTZ, 
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id)
 );
 
 CREATE TABLE core_config_languages (
