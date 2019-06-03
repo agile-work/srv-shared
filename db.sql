@@ -187,18 +187,6 @@ CREATE TABLE core_groups (
   UNIQUE(code)
 );
 
--- CREATE TABLE core_groups_users (
---   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
---   user_id CHARACTER VARYING NOT NULL,
---   group_id CHARACTER VARYING NOT NULL,
---   created_by CHARACTER VARYING NOT NULL,
---   created_at TIMESTAMPTZ NOT NULL,
---   updated_by CHARACTER VARYING NOT NULL,
---   updated_at TIMESTAMPTZ NOT NULL,
---   PRIMARY KEY(id),
---   UNIQUE(user_id, group_id)
--- );
-
 CREATE TABLE core_schemas (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   job_id CHARACTER VARYING,
@@ -277,9 +265,8 @@ CREATE TABLE core_sch_fields (
   code CHARACTER VARYING NOT NULL,
   schema_id CHARACTER VARYING NOT NULL,
   field_type CHARACTER VARYING NOT NULL,
-  multivalue BOOLEAN,
+  definitions JSONB,
   permissions JSONB DEFAULT '[]'::JSONB NOT NULL,
-  lookup_id CHARACTER VARYING,
   groups JSONB DEFAULT '[]'::JSONB NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,

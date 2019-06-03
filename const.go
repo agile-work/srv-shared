@@ -48,6 +48,7 @@ const (
 	ViewCoreUserStructurePermissions string = "core_v_user_structure_permissions"
 	ViewCoreStructurePermissions     string = "core_v_structure_permissions"
 	ViewCoreUserAllPermissions       string = "core_v_user_all_permissions"
+	ViewCoreUserInstancePermissions  string = "core_v_user_instance_permissions"
 
 	// Custom schemas
 	TableCustomResources string = "cst_resources"
@@ -123,7 +124,8 @@ const (
 	FieldNumber        string = "number"
 	FieldDate          string = "date"
 	FieldMoney         string = "money"
-	FieldLookupTree    string = "lookup_tree"
-	FieldLookupStatic  string = "lookup_static"
-	FieldLookupDynamic string = "lookup_dynamic"
+	FieldLookup        string = "lookup"
+	FieldLookupTree    string = "tree"
+	FieldLookupStatic  string = "static"
+	FieldLookupDynamic string = "dynamic"
 )
