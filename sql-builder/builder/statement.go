@@ -190,6 +190,21 @@ func prepareUpdate(s *Statement, q Query) error {
 		q.WriteString(" = ?")
 	}
 
+	if len(s.JSONColumns) > 0 {
+		if len(s.Columns) > 0 {
+			q.WriteString(", ")
+		}
+		i := 0
+		for column, fields := range s.JSONColumns {
+			if i > 0 {
+				q.WriteString(", ")
+			}
+			jsonCol := fmt.Sprintf("%s = jsonb_set(%s::jsonb,'{%s}'::text[],(?)::jsonb, true)", column, column, fields[0])
+			q.WriteString(jsonCol)
+			i++
+		}
+	}
+
 	q.WriteValue(s.Data...)
 
 	err := s.WhereCond.Prepare(q)

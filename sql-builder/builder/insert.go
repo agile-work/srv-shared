@@ -3,9 +3,10 @@ package builder
 // Insert returns a statement
 func Insert(table string, columns ...string) *Statement {
 	return &Statement{
-		Type:    "insert",
-		Table:   table,
-		Columns: columns,
+		Type:        "insert",
+		Table:       table,
+		Columns:     columns,
+		JSONColumns: make(map[string][]string),
 	}
 }
 
