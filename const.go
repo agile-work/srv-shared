@@ -128,4 +128,9 @@ const (
 	FieldLookupTree    string = "tree"
 	FieldLookupStatic  string = "static"
 	FieldLookupDynamic string = "dynamic"
+
+	// Security permission scope
+	SecurityPermissionScopeGroup     string = "group"
+	SecurityPermissionScopeGroupUnit string = "group_unit"
+	SecurityPermissionScopeUnit      string = "unit"
 )
