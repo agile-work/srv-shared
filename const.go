@@ -133,4 +133,14 @@ const (
 	SecurityPermissionScopeGroup     string = "group"
 	SecurityPermissionScopeGroupUnit string = "group_unit"
 	SecurityPermissionScopeUnit      string = "unit"
+
+	//Lookup types
+	LookupDynamic string = "dynamic"
+	LookupStatic  string = "static"
+
+	//Data type
+	SQLDataTypeText   string = "text"
+	SQLDataTypeDate   string = "date"
+	SQLDataTypeNumber string = "number"
+	SQLDataTypeBool   string = "bool"
 )

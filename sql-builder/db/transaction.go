@@ -31,6 +31,22 @@ func (t *Transaction) Exec() error {
 	return nil
 }
 
+// Query executes a query returning rows when this method is called.
+func (t *Transaction) Query(statement *builder.Statement) (*sql.Rows, error) {
+	str, vals := statement.Query()
+	return t.tx.Query(str, vals...)
+}
+
+// Commit executes the commit action
+func (t *Transaction) Commit() {
+	t.tx.Commit()
+}
+
+// Commit executes the rollback action
+func (t *Transaction) Rollback() {
+	t.tx.Rollback()
+}
+
 // NewTransaction returns a new transaction
 func NewTransaction() (*Transaction, error) {
 	tx, err := db.Begin()
