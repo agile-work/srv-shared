@@ -2,6 +2,9 @@ package shared
 
 // System consts
 const (
+	// Prefix Table
+	InstancesTablePrefix string = "cst_"
+
 	// Tables
 	TableCoreTrees                         string = "core_trees"
 	TableCoreTreeLevels                    string = "core_tree_levels"

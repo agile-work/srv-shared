@@ -42,7 +42,7 @@ func (t *Transaction) Commit() {
 	t.tx.Commit()
 }
 
-// Commit executes the rollback action
+// Rollback executes the rollback action
 func (t *Transaction) Rollback() {
 	t.tx.Rollback()
 }

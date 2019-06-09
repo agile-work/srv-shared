@@ -51,6 +51,8 @@ CREATE TABLE core_users (
   receive_emails CHARACTER VARYING NOT NULL, -- always, never, required
   password CHARACTER VARYING NOT NULL,
   language_code CHARACTER VARYING NOT NULL,
+  security JSONB DEFAULT '{}'::JSONB,
+  security_instances JSONB DEFAULT '{}'::JSONB,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
