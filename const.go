@@ -122,15 +122,13 @@ const (
 	SecurityStructureWidget  string = "widget"
 	SecurityStructureSection string = "section"
 
-	// Fields types
-	FieldText          string = "text"
-	FieldNumber        string = "number"
-	FieldDate          string = "date"
-	FieldMoney         string = "money"
-	FieldLookup        string = "lookup"
-	FieldLookupTree    string = "tree"
-	FieldLookupStatic  string = "static"
-	FieldLookupDynamic string = "dynamic"
+	// Fields basic types
+	FieldText       string = "text"
+	FieldNumber     string = "number"
+	FieldDate       string = "date"
+	FieldLookup     string = "lookup"
+	FieldBoolean    string = "boolean"
+	FieldAttachment string = "attachment"
 
 	// Security permission scope
 	SecurityPermissionScopeGroup     string = "group"
