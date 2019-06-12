@@ -24,6 +24,7 @@ func (t *Transaction) Exec() error {
 		_, err := t.tx.Exec(str, vals...)
 		if err != nil {
 			t.tx.Rollback()
+			printQueryIfError(err, str, vals)
 			return err
 		}
 	}
@@ -34,7 +35,12 @@ func (t *Transaction) Exec() error {
 // Query executes a query returning rows when this method is called.
 func (t *Transaction) Query(statement *builder.Statement) (*sql.Rows, error) {
 	str, vals := statement.Query()
-	return t.tx.Query(str, vals...)
+	rows, err := t.tx.Query(str, vals...)
+	if err != nil {
+		printQueryIfError(err, str, vals)
+		return nil, err
+	}
+	return rows, nil
 }
 
 // Commit executes the commit action

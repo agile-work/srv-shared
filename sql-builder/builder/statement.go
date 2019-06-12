@@ -110,7 +110,7 @@ func prepareSelect(s *Statement, q Query) error {
 				if i > 0 {
 					q.WriteString(", ")
 				}
-				jsonCol := fmt.Sprintf("%s->'%s' as %s", column, f, f)
+				jsonCol := fmt.Sprintf("%s->>'%s' AS %s", column, f, f)
 				q.WriteString(jsonCol)
 			}
 		}
