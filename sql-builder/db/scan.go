@@ -58,6 +58,10 @@ func StructScan(rows *sql.Rows, obj interface{}) error {
 		return err
 	}
 
+	if len(results) == 0 {
+		return nil
+	}
+
 	var jsonMap []byte
 	if reflect.TypeOf(obj).Elem().Kind() == reflect.Struct {
 		jsonMap, _ = json.Marshal(results[0])
