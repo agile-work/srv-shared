@@ -134,11 +134,17 @@ const (
 	SecurityPermissionScopeGroupUnit string = "group_unit"
 	SecurityPermissionScopeUnit      string = "unit"
 
-	//Lookup types
+	// Lookup types
 	LookupDynamic string = "dynamic"
 	LookupStatic  string = "static"
 
-	//Data type
+	// Fields Lookup types
+	FieldLookupStatic   string = "static"
+	FieldLookupDynamic  string = "dynamic"
+	FieldLookupTree     string = "tree"
+	FieldLookupSecurity string = "security"
+
+	// Data type
 	SQLDataTypeText   string = "text"
 	SQLDataTypeDate   string = "date"
 	SQLDataTypeNumber string = "number"

@@ -97,6 +97,19 @@ func Query(statement builder.Builder) (*sql.Rows, error) {
 	return rows, err
 }
 
+// Count prepare the statement, executes and return the total of lines
+func Count(field, table string, conditions builder.Builder) (int, error) {
+	countColumn := fmt.Sprintf("count(%s.%s) as total", table, field)
+	statement := builder.Select(countColumn).From(table).Where(conditions)
+	query, values := statement.Query()
+	total := 0
+	err := db.QueryRow(query, values...).Scan(&total)
+	if err != nil && err != sql.ErrNoRows {
+		return -1, err
+	}
+	return total, nil
+}
+
 // printQueryIfError show information about query execution if has error
 func printQueryIfError(err error, query string, values []interface{}) {
 	if err != nil {
