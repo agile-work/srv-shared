@@ -127,7 +127,6 @@ const (
 	FieldNumber     string = "number"
 	FieldDate       string = "date"
 	FieldLookup     string = "lookup"
-	FieldBoolean    string = "boolean"
 	FieldAttachment string = "attachment"
 
 	// Security permission scope
