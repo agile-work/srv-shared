@@ -23,14 +23,30 @@ func QueryStruct(statement builder.Builder, model interface{}) error {
 	return StructScan(rows, model)
 }
 
-// LoadStruct select struct values from the database table.
+// SelectStruct select struct values from the database table.
 // model must be a pointer to a struct or an array.
-func LoadStruct(table string, model interface{}, conditions builder.Builder) error {
+func SelectStruct(table string, model interface{}, conditions builder.Builder) error {
 	query, values, err := StructSelectQuery(table, model, conditions)
 	if err != nil {
 		return err
 	}
 	rows, err := db.Query(query, values...)
+	printQueryIfError(err, query, values)
+	if err != nil {
+		return err
+	}
+
+	return StructScan(rows, model)
+}
+
+// SelectStructTx select struct values from the database table.
+// model must be a pointer to a struct or an array.
+func SelectStructTx(tx *sql.Tx, table string, model interface{}, conditions builder.Builder) error {
+	query, values, err := StructSelectQuery(table, model, conditions)
+	if err != nil {
+		return err
+	}
+	rows, err := tx.Query(query, values...)
 	printQueryIfError(err, query, values)
 	if err != nil {
 		return err
@@ -57,6 +73,24 @@ func InsertStruct(table string, model interface{}, fields ...string) (string, er
 	return id, err
 }
 
+// InsertStructTx insert struct values in the database table
+func InsertStructTx(tx *sql.Tx, table string, model interface{}, fields ...string) (string, error) {
+	var err error
+	id := ""
+	query := ""
+	values := []interface{}{}
+	if reflect.TypeOf(model).Kind() == reflect.Slice {
+		query, values = StructMultipleInsertQuery(table, model, strings.Join(fields, ","))
+		_, err = tx.Exec(query, values...)
+	} else {
+		query, values = StructInsertQuery(table, model, strings.Join(fields, ","), false).Query()
+		err = tx.QueryRow(query, values...).Scan(&id)
+	}
+	printQueryIfError(err, query, values)
+
+	return id, err
+}
+
 // UpdateStruct update struct values in the database table
 func UpdateStruct(table string, model interface{}, conditions builder.Builder, fields ...string) error {
 	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), conditions)
@@ -68,6 +102,17 @@ func UpdateStruct(table string, model interface{}, conditions builder.Builder, f
 	return err
 }
 
+// UpdateStructTx update struct values in the database table
+func UpdateStructTx(tx *sql.Tx, table string, model interface{}, conditions builder.Builder, fields ...string) error {
+	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), conditions)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(query, values...)
+	printQueryIfError(err, query, values)
+	return err
+}
+
 // DeleteStruct delete struct instance in the database table
 func DeleteStruct(table string, conditions builder.Builder) error {
 	query, values, err := StructDeleteQuery(table, conditions)
@@ -75,6 +120,17 @@ func DeleteStruct(table string, conditions builder.Builder) error {
 		return err
 	}
 	_, err = db.Exec(query, values...)
+	printQueryIfError(err, query, values)
+	return err
+}
+
+// DeleteStructTx delete struct instance in the database table
+func DeleteStructTx(tx *sql.Tx, table string, conditions builder.Builder) error {
+	query, values, err := StructDeleteQuery(table, conditions)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(query, values...)
 	printQueryIfError(err, query, values)
 	return err
 }

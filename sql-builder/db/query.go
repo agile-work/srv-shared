@@ -2,7 +2,6 @@ package db
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -157,8 +156,8 @@ func StructMultipleInsertQuery(table string, obj interface{}, insertableFields s
 	return statement.Query()
 }
 
-// StructUpdateQuery generates the update query based on the struct fields
-func StructUpdateQuery(table string, obj interface{}, updatableFields string, conditions builder.Builder) (string, []interface{}, error) {
+// StructUpdateStatement generates the update query based on the struct fields
+func StructUpdateStatement(table string, obj interface{}, updatableFields string, conditions builder.Builder) *builder.Statement {
 	v := reflect.ValueOf(obj).Elem()
 	t := reflect.TypeOf(obj).Elem()
 
@@ -177,13 +176,13 @@ func StructUpdateQuery(table string, obj interface{}, updatableFields string, co
 		}
 	}
 
-	if conditions == nil {
-		return "", nil, errors.New("invalida where conditions")
-	}
+	return builder.Update(table, fields...).Values(args...).Where(conditions)
+}
 
-	statement := builder.Update(table, fields...).Values(args...).Where(conditions)
-	str, vals := statement.Query()
-
+// StructUpdateQuery generates the update query based on the struct fields
+// TODO: retirar o retorno de erro
+func StructUpdateQuery(table string, obj interface{}, updatableFields string, conditions builder.Builder) (string, []interface{}, error) {
+	str, vals := StructUpdateStatement(table, obj, updatableFields, conditions).Query()
 	return str, vals, nil
 }
 
