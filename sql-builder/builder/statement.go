@@ -19,6 +19,9 @@ type Statement struct {
 	JSONObject    string
 	JSONWhereCond Builder
 	RawQuery      string
+	LimitOpt      int
+	OffsetOpt     int
+	OrderByOpt    Builder
 }
 
 // Query returns query as a string with an array with values
@@ -134,6 +137,23 @@ func prepareSelect(s *Statement, q Query) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	if s.OrderByOpt != nil {
+		err := s.OrderByOpt.Prepare(q)
+		if err != nil {
+			return err
+		}
+	}
+
+	if s.LimitOpt > 0 {
+		q.WriteString(" LIMIT ")
+		q.WriteString(strconv.Itoa(s.LimitOpt))
+	}
+
+	if s.OffsetOpt > 0 {
+		q.WriteString(" OFFSET ")
+		q.WriteString(strconv.Itoa(s.OffsetOpt))
 	}
 
 	return nil

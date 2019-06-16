@@ -22,3 +22,15 @@ func (s *Statement) From(table string) *Statement {
 	s.Table = table
 	return s
 }
+
+// Limit defines statement limit select
+func (s *Statement) Limit(value int) *Statement {
+	s.LimitOpt = value
+	return s
+}
+
+// Offset defines statement offset select
+func (s *Statement) Offset(value int) *Statement {
+	s.OffsetOpt = value
+	return s
+}

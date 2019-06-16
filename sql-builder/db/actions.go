@@ -9,6 +9,14 @@ import (
 	"github.com/agile-work/srv-shared/sql-builder/builder"
 )
 
+// Options defines a structure to send options to be used in a query
+type Options struct {
+	Conditions builder.Builder
+	OrderBy    []builder.Builder
+	Limit      int
+	Offset     int
+}
+
 // QueryStruct prepare and execute the statement and then populates the model
 // model must be a pointer to a struct or an array.
 func QueryStruct(statement builder.Builder, model interface{}) error {
@@ -25,8 +33,8 @@ func QueryStruct(statement builder.Builder, model interface{}) error {
 
 // SelectStruct select struct values from the database table.
 // model must be a pointer to a struct or an array.
-func SelectStruct(table string, model interface{}, conditions builder.Builder) error {
-	query, values, err := StructSelectQuery(table, model, conditions)
+func SelectStruct(table string, model interface{}, opt Options) error {
+	query, values, err := StructSelectQuery(table, model, opt)
 	if err != nil {
 		return err
 	}
@@ -41,8 +49,8 @@ func SelectStruct(table string, model interface{}, conditions builder.Builder) e
 
 // SelectStructTx select struct values from the database table.
 // model must be a pointer to a struct or an array.
-func SelectStructTx(tx *sql.Tx, table string, model interface{}, conditions builder.Builder) error {
-	query, values, err := StructSelectQuery(table, model, conditions)
+func SelectStructTx(tx *sql.Tx, table string, model interface{}, opt Options) error {
+	query, values, err := StructSelectQuery(table, model, opt)
 	if err != nil {
 		return err
 	}
@@ -92,8 +100,8 @@ func InsertStructTx(tx *sql.Tx, table string, model interface{}, fields ...strin
 }
 
 // UpdateStruct update struct values in the database table
-func UpdateStruct(table string, model interface{}, conditions builder.Builder, fields ...string) error {
-	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), conditions)
+func UpdateStruct(table string, model interface{}, opt Options, fields ...string) error {
+	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), opt)
 	if err != nil {
 		return err
 	}
@@ -103,8 +111,8 @@ func UpdateStruct(table string, model interface{}, conditions builder.Builder, f
 }
 
 // UpdateStructTx update struct values in the database table
-func UpdateStructTx(tx *sql.Tx, table string, model interface{}, conditions builder.Builder, fields ...string) error {
-	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), conditions)
+func UpdateStructTx(tx *sql.Tx, table string, model interface{}, opt Options, fields ...string) error {
+	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), opt)
 	if err != nil {
 		return err
 	}
@@ -114,8 +122,8 @@ func UpdateStructTx(tx *sql.Tx, table string, model interface{}, conditions buil
 }
 
 // DeleteStruct delete struct instance in the database table
-func DeleteStruct(table string, conditions builder.Builder) error {
-	query, values, err := StructDeleteQuery(table, conditions)
+func DeleteStruct(table string, opt Options) error {
+	query, values, err := StructDeleteQuery(table, opt)
 	if err != nil {
 		return err
 	}
@@ -125,8 +133,8 @@ func DeleteStruct(table string, conditions builder.Builder) error {
 }
 
 // DeleteStructTx delete struct instance in the database table
-func DeleteStructTx(tx *sql.Tx, table string, conditions builder.Builder) error {
-	query, values, err := StructDeleteQuery(table, conditions)
+func DeleteStructTx(tx *sql.Tx, table string, opt Options) error {
+	query, values, err := StructDeleteQuery(table, opt)
 	if err != nil {
 		return err
 	}
@@ -154,9 +162,9 @@ func Query(statement builder.Builder) (*sql.Rows, error) {
 }
 
 // Count prepare the statement, executes and return the total of lines
-func Count(field, table string, conditions builder.Builder) (int, error) {
+func Count(field, table string, opt Options) (int, error) {
 	countColumn := fmt.Sprintf("count(%s.%s) as total", table, field)
-	statement := builder.Select(countColumn).From(table).Where(conditions)
+	statement := builder.Select(countColumn).From(table).Where(opt.Conditions).Limit(opt.Limit).Offset(opt.Offset)
 	query, values := statement.Query()
 	total := 0
 	err := db.QueryRow(query, values...).Scan(&total)

@@ -8,7 +8,7 @@ import (
 
 // Transaction is an database transaction.
 type Transaction struct {
-	tx         *sql.Tx
+	Tx         *sql.Tx
 	statements []*builder.Statement
 }
 
@@ -21,21 +21,19 @@ func (t *Transaction) Add(statement *builder.Statement) {
 func (t *Transaction) Exec() error {
 	for _, s := range t.statements {
 		str, vals := s.Query()
-		_, err := t.tx.Exec(str, vals...)
+		_, err := t.Tx.Exec(str, vals...)
 		if err != nil {
-			t.tx.Rollback()
 			printQueryIfError(err, str, vals)
 			return err
 		}
 	}
-	t.tx.Commit()
 	return nil
 }
 
 // Query executes a query returning rows when this method is called.
 func (t *Transaction) Query(statement *builder.Statement) (*sql.Rows, error) {
 	str, vals := statement.Query()
-	rows, err := t.tx.Query(str, vals...)
+	rows, err := t.Tx.Query(str, vals...)
 	if err != nil {
 		printQueryIfError(err, str, vals)
 		return nil, err
@@ -45,12 +43,12 @@ func (t *Transaction) Query(statement *builder.Statement) (*sql.Rows, error) {
 
 // Commit executes the commit action
 func (t *Transaction) Commit() {
-	t.tx.Commit()
+	t.Tx.Commit()
 }
 
 // Rollback executes the rollback action
 func (t *Transaction) Rollback() {
-	t.tx.Rollback()
+	t.Tx.Rollback()
 }
 
 // NewTransaction returns a new transaction
@@ -60,6 +58,6 @@ func NewTransaction() (*Transaction, error) {
 		return nil, err
 	}
 	return &Transaction{
-		tx: tx,
+		Tx: tx,
 	}, nil
 }
