@@ -33,7 +33,7 @@ func QueryStruct(statement builder.Builder, model interface{}) error {
 
 // SelectStruct select struct values from the database table.
 // model must be a pointer to a struct or an array.
-func SelectStruct(table string, model interface{}, opt Options) error {
+func SelectStruct(table string, model interface{}, opt *Options) error {
 	query, values, err := StructSelectQuery(table, model, opt)
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func SelectStruct(table string, model interface{}, opt Options) error {
 
 // SelectStructTx select struct values from the database table.
 // model must be a pointer to a struct or an array.
-func SelectStructTx(tx *sql.Tx, table string, model interface{}, opt Options) error {
+func SelectStructTx(tx *sql.Tx, table string, model interface{}, opt *Options) error {
 	query, values, err := StructSelectQuery(table, model, opt)
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func InsertStructTx(tx *sql.Tx, table string, model interface{}, fields ...strin
 }
 
 // UpdateStruct update struct values in the database table
-func UpdateStruct(table string, model interface{}, opt Options, fields ...string) error {
+func UpdateStruct(table string, model interface{}, opt *Options, fields ...string) error {
 	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), opt)
 	if err != nil {
 		return err
@@ -111,7 +111,7 @@ func UpdateStruct(table string, model interface{}, opt Options, fields ...string
 }
 
 // UpdateStructTx update struct values in the database table
-func UpdateStructTx(tx *sql.Tx, table string, model interface{}, opt Options, fields ...string) error {
+func UpdateStructTx(tx *sql.Tx, table string, model interface{}, opt *Options, fields ...string) error {
 	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), opt)
 	if err != nil {
 		return err
@@ -122,7 +122,7 @@ func UpdateStructTx(tx *sql.Tx, table string, model interface{}, opt Options, fi
 }
 
 // DeleteStruct delete struct instance in the database table
-func DeleteStruct(table string, opt Options) error {
+func DeleteStruct(table string, opt *Options) error {
 	query, values, err := StructDeleteQuery(table, opt)
 	if err != nil {
 		return err
@@ -133,7 +133,7 @@ func DeleteStruct(table string, opt Options) error {
 }
 
 // DeleteStructTx delete struct instance in the database table
-func DeleteStructTx(tx *sql.Tx, table string, opt Options) error {
+func DeleteStructTx(tx *sql.Tx, table string, opt *Options) error {
 	query, values, err := StructDeleteQuery(table, opt)
 	if err != nil {
 		return err
@@ -162,7 +162,7 @@ func Query(statement builder.Builder) (*sql.Rows, error) {
 }
 
 // Count prepare the statement, executes and return the total of lines
-func Count(field, table string, opt Options) (int, error) {
+func Count(field, table string, opt *Options) (int, error) {
 	countColumn := fmt.Sprintf("count(%s.%s) as total", table, field)
 	statement := builder.Select(countColumn).From(table).Where(opt.Conditions).Limit(opt.Limit).Offset(opt.Offset)
 	query, values := statement.Query()

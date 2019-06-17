@@ -73,7 +73,7 @@ func parseSelectStruct(table, alias string, obj interface{}, embedded bool) ([]s
 
 // StructSelectQuery generates the select query based on the struct fields
 // Object can be a poninter to an array or struct
-func StructSelectQuery(table string, obj interface{}, opt Options) (string, []interface{}, error) {
+func StructSelectQuery(table string, obj interface{}, opt *Options) (string, []interface{}, error) {
 	fields, joins, err := parseSelectStruct(table, "", obj, false)
 	if err != nil {
 		return "", nil, err
@@ -164,7 +164,7 @@ func StructMultipleInsertQuery(table string, obj interface{}, insertableFields s
 }
 
 // StructUpdateStatement generates the update query based on the struct fields
-func StructUpdateStatement(table string, obj interface{}, updatableFields string, opt Options) *builder.Statement {
+func StructUpdateStatement(table string, obj interface{}, updatableFields string, opt *Options) *builder.Statement {
 	v := reflect.ValueOf(obj).Elem()
 	t := reflect.TypeOf(obj).Elem()
 
@@ -188,13 +188,13 @@ func StructUpdateStatement(table string, obj interface{}, updatableFields string
 
 // StructUpdateQuery generates the update query based on the struct fields
 // TODO: retirar o retorno de erro
-func StructUpdateQuery(table string, obj interface{}, updatableFields string, opt Options) (string, []interface{}, error) {
+func StructUpdateQuery(table string, obj interface{}, updatableFields string, opt *Options) (string, []interface{}, error) {
 	str, vals := StructUpdateStatement(table, obj, updatableFields, opt).Query()
 	return str, vals, nil
 }
 
 // StructDeleteQuery generates the delete query based on the struct fields
-func StructDeleteQuery(table string, opt Options) (string, []interface{}, error) {
+func StructDeleteQuery(table string, opt *Options) (string, []interface{}, error) {
 	statement := builder.Delete(table).Where(opt.Conditions)
 	str, vals := statement.Query()
 
