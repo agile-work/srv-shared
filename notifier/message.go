@@ -19,32 +19,3 @@ type Message struct {
 	Ack           bool        `json:"acknowledged" sql:"acknowledged"`
 	UserID        string      `json:"user_id" sql:"user_id"`
 }
-
-// // String returns message body as a string
-// func (m *Message) String() string {
-// 	return string(m.Body)
-// }
-
-// // StringToBody sets the body byte array
-// func (m *Message) StringToBody(value string) {
-// 	m.Body = []byte(value)
-// }
-
-// // StructToBody sets the body byte array
-// func (m *Message) StructToBody(value interface{}) {
-// 	jsonBody, err := json.Marshal(value)
-// 	if err != nil {
-// 		// TODO: log this erro to file
-// 		m.Body = nil
-// 		return
-// 	}
-// 	m.Body = jsonBody
-// }
-
-// // BodyToStruct loads an struct from the body byte array to an object pointer
-// func (m *Message) BodyToStruct(object interface{}) {
-// 	err := json.Unmarshal(m.Body, object)
-// 	if err != nil {
-// 		// TODO: log this erro to file
-// 	}
-// }
