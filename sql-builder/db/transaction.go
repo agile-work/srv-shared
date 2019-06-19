@@ -23,10 +23,12 @@ func (t *Transaction) Exec() error {
 		str, vals := s.Query()
 		_, err := t.Tx.Exec(str, vals...)
 		if err != nil {
+			t.Tx.Rollback()
 			printQueryIfError(err, str, vals)
 			return err
 		}
 	}
+	t.Tx.Commit()
 	return nil
 }
 

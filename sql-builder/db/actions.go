@@ -11,10 +11,22 @@ import (
 
 // Options defines a structure to send options to be used in a query
 type Options struct {
+	Columns    []string
 	Conditions builder.Builder
 	OrderBy    []builder.Builder
 	Limit      int
 	Offset     int
+}
+
+func (o *Options) AddOrderBy(builder builder.Builder) {
+	o.OrderBy = append(o.OrderBy, builder)
+}
+
+func (o *Options) AddCondition(condition builder.Builder) {
+	o.Conditions = builder.And(
+		o.Conditions,
+		condition,
+	)
 }
 
 // QueryStruct prepare and execute the statement and then populates the model
