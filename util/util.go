@@ -67,25 +67,38 @@ func LoadSQLOptionsFromURLQuery(query url.Values, opt *db.Options) {
 }
 
 // GetColumnsFromBody get a body and return an string array with columns from the body
-func GetColumnsFromBody(body []byte, object interface{}) ([]string, map[string]string, error) {
-	jsonMap := make(map[string]interface{})
-	if err := json.Unmarshal(body, &jsonMap); err != nil {
-		return nil, nil, err
-	}
+func GetColumnsFromBody(body map[string]interface{}, object interface{}) ([]string, map[string]string, error) {
 	objectTranslationColumns := []string{}
 	if models.TranslationFieldsRequestLanguageCode != "all" {
 		objectTranslationColumns = getObjectTranslationColumns(object)
 	}
 	columns := []string{}
 	translations := make(map[string]string)
-	for k, v := range jsonMap {
+	for k, v := range body {
 		if k != "created_by" && k != "created_at" && k != "updated_by" && k != "updated_at" && !Contains(objectTranslationColumns, k) {
 			columns = append(columns, k)
 		} else if Contains(objectTranslationColumns, k) {
 			translations[k] = v.(string)
 		}
 	}
+	columns = append(columns, "updated_by")
+	columns = append(columns, "updated_at")
+
 	return columns, translations, nil
+}
+
+// GetBodyMap get request body while maintaining the value in the request
+func GetBodyMap(r *http.Request) (map[string]interface{}, error) {
+	jsonMap := make(map[string]interface{})
+	body, err := GetBody(r)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(body, &jsonMap); err != nil {
+		return nil, err
+	}
+
+	return jsonMap, nil
 }
 
 // GetBody get request body while maintaining the value in the request
@@ -99,6 +112,7 @@ func GetBody(r *http.Request) ([]byte, error) {
 		}
 	}
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	return bodyBytes, nil
 }
 
@@ -115,16 +129,12 @@ func getObjectTranslationColumns(object interface{}) []string {
 }
 
 // GetBodyColumns return all columns from body
-func GetBodyColumns(body []byte) ([]string, error) {
-	jsonMap := make(map[string]interface{})
-	if err := json.Unmarshal(body, &jsonMap); err != nil {
-		return nil, err
-	}
+func GetBodyColumns(body map[string]interface{}) []string {
 	columns := []string{}
-	for k := range jsonMap {
+	for k := range body {
 		columns = append(columns, k)
 	}
-	return columns, nil
+	return columns
 }
 
 // SetSchemaAudit load user and time to audit fields
@@ -152,15 +162,4 @@ func SetSchemaAudit(r *http.Request, object interface{}) {
 	if elementUpdatedAt.IsValid() {
 		elementUpdatedAt.Set(reflect.ValueOf(now))
 	}
-}
-
-// LoadBodyToStruct load the request body to an object
-func LoadBodyToStruct(r *http.Request, object interface{}) error {
-	body, _ := GetBody(r)
-
-	err := json.Unmarshal(body, &object)
-	if err != nil {
-		return err
-	}
-	return nil
 }

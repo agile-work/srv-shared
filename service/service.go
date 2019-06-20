@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/agile-work/srv-shared/constants"
 	"github.com/agile-work/srv-shared/socket"
 	"github.com/agile-work/srv-shared/token"
 
@@ -50,7 +51,7 @@ func Register(code, serviceType string) (*Service, error) {
 	payload["scope"] = "service"
 	payload["service_type"] = serviceType
 
-	tokenString, err := token.New(payload)
+	tokenString, err := token.New(payload, constants.Year)
 
 	// TODO: remove the InsecureSkipVerify when deploy in production
 	dialer := websocket.Dialer{

@@ -108,6 +108,7 @@ const (
 	SysParamAPILoginURL      string = "api_login_url"
 	SysParamAPILoginEmail    string = "api_login_email"
 	SysParamAPILoginPassword string = "api_login_password"
+	SysParamLanguageCode     string = "language_code"
 
 	// Notifications email delivery
 	NotificationsEmailAlways   string = "always"
@@ -146,4 +147,11 @@ const (
 	SQLDataTypeDate   string = "date"
 	SQLDataTypeNumber string = "number"
 	SQLDataTypeBool   string = "bool"
+
+	// Time in seconds
+	Year  int64 = 12 * Month
+	Month int64 = 30 * Day
+	Week  int64 = 604800
+	Day   int64 = 86400
+	Hour  int64 = 3600
 )

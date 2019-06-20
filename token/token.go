@@ -2,13 +2,15 @@ package token
 
 import (
 	"errors"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-// New return a string with the token including payload
-func New(payload map[string]interface{}) (string, error) {
+// New return a string with the token including payload and the expiration in years, months or days
+func New(payload map[string]interface{}, exp int64) (string, error) {
 	claims := jwt.MapClaims{}
+	claims["exp"] = time.Now().Add(time.Second * time.Duration(exp)).Unix()
 	for k, v := range payload {
 		claims[k] = v
 	}
