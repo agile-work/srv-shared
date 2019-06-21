@@ -1,8 +1,6 @@
 package socket
 
 import (
-	"log"
-
 	"github.com/agile-work/srv-shared/util"
 )
 
@@ -38,7 +36,6 @@ func GetHub() *Hub {
 
 // Run start a new thread to process hub actions
 func (h *Hub) Run() {
-	log.Printf("Hub running\n")
 	for {
 		select {
 		case client := <-h.register:
@@ -50,18 +47,15 @@ func (h *Hub) Run() {
 				client.Close()
 			}
 		case message := <-h.messages:
-			log.Println("hub messages")
 			if len(message.Recipients) <= len(h.clients) {
 				for _, id := range message.Recipients {
 					if client, ok := h.clients[id]; ok {
-						log.Println("to client inbox")
 						client.inbox <- message
 					}
 				}
 			} else {
 				for _, client := range h.clients {
 					if util.Contains(message.Recipients, client.id) {
-						log.Println("to client inbox")
 						client.inbox <- message
 					}
 				}

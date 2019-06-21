@@ -88,9 +88,12 @@ func (c *Client) Run() {
 			if _, ok := c.connections[conn]; ok {
 				delete(c.connections, conn)
 				close(conn.send)
+				if len(c.connections) <= 0 {
+					c.hub.unregister <- c.id
+					return
+				}
 			}
 		case incomingMessage := <-c.outbox:
-			log.Println("client outbox")
 			c.hub.messages <- incomingMessage
 		case outcomingMessage := <-c.inbox:
 			for conn := range c.connections {
@@ -98,7 +101,6 @@ func (c *Client) Run() {
 				if err != nil {
 					log.Println("invalid message data")
 				} else {
-					log.Println("processing client inbox")
 					conn.send <- msgBytes
 				}
 			}

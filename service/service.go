@@ -74,7 +74,5 @@ func Register(code, serviceType string) (*Service, error) {
 		conn:        conn,
 	}
 
-	fmt.Printf("Connected to realtime web socket %s", u.String())
-
 	return &service, nil
 }
