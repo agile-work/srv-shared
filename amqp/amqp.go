@@ -76,7 +76,7 @@ func (queue *Queue) Stream() (<-chan amqp.Delivery, error) {
 	if !queue.isReady {
 		return nil, errors.New("Queue not ready")
 	}
-	fmt.Printf("Ready to start processing queue: %s ...\n\n", queue.name)
+	fmt.Printf("Ready to start processing queue: %s ...\n", queue.name)
 	return queue.channel.Consume(
 		queue.name,
 		"",    // Consumer
