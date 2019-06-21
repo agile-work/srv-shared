@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	shared "github.com/agile-work/srv-shared"
+	"github.com/agile-work/srv-shared/constants"
 	"github.com/agile-work/srv-shared/sql-builder/db"
 )
 
@@ -36,15 +36,15 @@ func New(message Message, receiver Receiver, passthrough, forceEmail bool) {
 	for _, user := range receiver.allUsers {
 		if user.Notify {
 			message.UserID = user.UserID
-			_, err := db.InsertStruct(shared.TableCoreUserNotifications, &message)
+			_, err := db.InsertStruct(constants.TableCoreUserNotifications, &message)
 			if err != nil {
 				// TODO: log this erro to file
 				log.Println(err.Error())
 			}
 		}
-		if (user.SendEmail && user.ReceiveEmails == shared.NotificationsEmailAlways) || (forceEmail && user.ReceiveEmails == shared.NotificationsEmailRequired) {
+		if (user.SendEmail && user.ReceiveEmails == constants.NotificationsEmailAlways) || (forceEmail && user.ReceiveEmails == constants.NotificationsEmailRequired) {
 			_, err := db.InsertStruct(
-				shared.TableCoreUserNotificationEmails,
+				constants.TableCoreUserNotificationEmails,
 				&message,
 				"user_id",
 				"structure_id",
