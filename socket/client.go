@@ -4,17 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/agile-work/srv-shared/token"
 	"github.com/gorilla/websocket"
-)
-
-const (
-	writeWait      = 10 * time.Second
-	pongWait       = 60 * time.Second
-	pingPeriod     = (pongWait * 9) / 10
-	maxMessageSize = 512
 )
 
 var upgrader = websocket.Upgrader{
