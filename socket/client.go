@@ -1,10 +1,12 @@
 package socket
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/agile-work/srv-shared/service"
 	"github.com/agile-work/srv-shared/token"
 	"github.com/gorilla/websocket"
 )
@@ -25,6 +27,26 @@ type Client struct {
 	unregister  chan *Connection
 	inbox       chan *Message
 	outbox      chan *Message
+	serviceData *service.Service
+	userData    UserData
+}
+
+// UserData representes user information
+type UserData struct {
+	UserName    string    `json:"username"`
+	ConnectedAt time.Time `json:"connected_at"`
+	Uptime      time.Time `json:"uptime"`
+}
+
+// GetServiceData returns client service metadata
+func (c *Client) GetServiceData() ([]byte, error) {
+	c.serviceData.GetUptime()
+	return json.Marshal(c.serviceData)
+}
+
+// GetUserData returns client user metadata
+func (c *Client) GetUserData() ([]byte, error) {
+	return json.Marshal(c.userData)
 }
 
 // GetID returns client id
@@ -51,7 +73,7 @@ func (c *Client) Close() {
 }
 
 // NewClient creates a new client
-func NewClient(hub *Hub, id, scope string, conn *Connection) *Client {
+func NewClient(hub *Hub, id, scope string, service *service.Service, conn *Connection) *Client {
 	client := &Client{
 		hub:         hub,
 		id:          id,
@@ -61,6 +83,7 @@ func NewClient(hub *Hub, id, scope string, conn *Connection) *Client {
 		unregister:  make(chan *Connection),
 		inbox:       make(chan *Message, 256),
 		outbox:      make(chan *Message, 256),
+		serviceData: service,
 	}
 
 	client.connections[conn] = true
@@ -131,13 +154,15 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 
 	id := payload["code"].(string)
 	scope := payload["scope"].(string)
+	service := &service.Service{}
 	if scope == "service" {
-		id = fmt.Sprintf("%s.%s", payload["service_type"].(string), id)
+		serviceBytes, _ := json.Marshal(payload["service"].(map[string]interface{}))
+		json.Unmarshal(serviceBytes, service)
 	}
 
 	client := hub.getClient(id)
 	if client == nil {
-		client = NewClient(hub, id, scope, connection)
+		client = NewClient(hub, id, scope, service, connection)
 		client.hub.register <- client
 	}
 

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/agile-work/srv-shared/constants"
+	"github.com/agile-work/srv-shared/service"
 	"github.com/agile-work/srv-shared/token"
 	"github.com/gorilla/websocket"
 )
@@ -28,6 +29,7 @@ type WebSocketConnection struct {
 	conn              *websocket.Conn
 	messages          chan *Message
 	connection        chan bool
+	service           *service.Service
 }
 
 func (ws *WebSocketConnection) connect() {
@@ -38,6 +40,7 @@ func (ws *WebSocketConnection) connect() {
 		ws.reconnectAttempts++
 	}
 	if err != nil {
+		fmt.Println(err)
 		duration := time.Duration(ws.reconnectInterval) * time.Second
 		time.Sleep(duration)
 		fmt.Printf("Realtime trying to connect (attempt: %d | interval: %s)\n", ws.reconnectAttempts, duration)
@@ -49,7 +52,7 @@ func (ws *WebSocketConnection) connect() {
 		return
 	}
 
-	if ws.reconnectAttempts == 0 {
+	if ws.reconnectAttempts == 1 {
 		fmt.Println("Realtime connected")
 	} else {
 		fmt.Printf("Realtime connected after %d attemps\n", ws.reconnectAttempts-1)
@@ -88,15 +91,15 @@ func (ws *WebSocketConnection) readPump() {
 }
 
 // Init initialize realtime connection
-func Init(code, serviceType, host string, port int) error {
+func Init(service *service.Service, host string, port int) error {
 	if ws != nil && ws.dialer != nil {
 		return fmt.Errorf("realtime already initilized")
 	}
 
 	payload := make(map[string]interface{})
-	payload["code"] = code
+	payload["service"] = service
 	payload["scope"] = "service"
-	payload["service_type"] = serviceType
+	payload["code"] = service.InstanceCode
 
 	tokenString, err := token.New(payload, constants.Year)
 	if err != nil {
@@ -104,8 +107,8 @@ func Init(code, serviceType, host string, port int) error {
 	}
 
 	ws = &WebSocketConnection{
-		code:              code,
-		serviceType:       serviceType,
+		code:              service.InstanceCode,
+		serviceType:       service.Category,
 		host:              host,
 		port:              port,
 		token:             tokenString,
@@ -129,7 +132,6 @@ func Init(code, serviceType, host string, port int) error {
 func handleConnection(conn <-chan bool) {
 	for status := range conn {
 		if !status {
-
 			ws.connect()
 		}
 	}

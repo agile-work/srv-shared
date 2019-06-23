@@ -42,13 +42,14 @@ func (r *RedisClient) connect() {
 
 	if r.reconnectAttempts == 0 {
 		fmt.Println("Redis connecting...")
+		r.reconnectAttempts++
 	}
 
 	if err := r.client.Ping().Err(); err != nil {
 		duration := time.Duration(r.reconnectInterval) * time.Second
 		time.Sleep(duration)
-		r.reconnectAttempts++
 		fmt.Printf("Redis trying to connect (attempt: %d | interval: %s)\n", r.reconnectAttempts, duration)
+		r.reconnectAttempts++
 		if res := math.Mod(float64(r.reconnectAttempts), 10); res == 0 {
 			r.reconnectInterval += 10
 		}
@@ -56,10 +57,10 @@ func (r *RedisClient) connect() {
 		return
 	}
 
-	if r.reconnectAttempts == 0 {
+	if r.reconnectAttempts == 1 {
 		fmt.Println("Redis connected")
 	} else {
-		fmt.Printf("Redis connected after %d attemps\n", r.reconnectAttempts)
+		fmt.Printf("Redis connected after %d attemps\n", r.reconnectAttempts-1)
 	}
 
 	r.reconnectAttempts = 1

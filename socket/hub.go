@@ -1,6 +1,8 @@
 package socket
 
 import (
+	"time"
+
 	"github.com/agile-work/srv-shared/util"
 )
 
@@ -18,6 +20,9 @@ type Hub struct {
 
 	// Messages from the web socket
 	messages chan *Message
+
+	// StartAt register the time the service initializes
+	startAt time.Time
 }
 
 var defaultHub Hub
@@ -29,6 +34,7 @@ func GetHub() *Hub {
 		unregister: make(chan string),
 		clients:    make(map[string]*Client),
 		messages:   make(chan *Message, 256),
+		startAt:    time.Now(),
 	}
 
 	return &defaultHub
@@ -75,4 +81,9 @@ func (h *Hub) getClient(id string) *Client {
 // GetClients returns all registered clients
 func (h *Hub) GetClients() map[string]*Client {
 	return h.clients
+}
+
+// GetStartAt returns realtime web socket initialize time
+func (h *Hub) GetStartAt() time.Time {
+	return h.startAt
 }
