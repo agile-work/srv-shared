@@ -15,38 +15,54 @@ import (
 
 var ws *WebSocketConnection
 
-// WebSocketConnection represents a web socket connection
+// WebSocketConnection represents a realtime connection
 type WebSocketConnection struct {
-	code        string
-	serviceType string
-	host        string
-	port        int
-	token       string
-	available   bool
-	shutdown    bool
-	dialer      *websocket.Dialer
-	conn        *websocket.Conn
-	messages    chan *Message
+	code              string
+	serviceType       string
+	host              string
+	port              int
+	token             string
+	reconnectInterval int
+	reconnectAttempts int
+	dialer            *websocket.Dialer
+	conn              *websocket.Conn
+	messages          chan *Message
+	connection        chan bool
 }
 
 func (ws *WebSocketConnection) connect() {
 	url := fmt.Sprintf("wss://%s:%d/realtime/ws", ws.host, ws.port)
 	conn, _, err := ws.dialer.Dial(url, http.Header{"Authorization": []string{ws.token}})
+	if ws.reconnectAttempts == 0 {
+		fmt.Println("Realtime connecting...")
+	}
 	if err != nil {
-		ws.available = false
+		duration := time.Duration(ws.reconnectInterval) * time.Second
+		time.Sleep(duration)
+		ws.reconnectAttempts++
+		fmt.Printf("Realtime trying to connect (attempt: %d | interval: %s)\n", ws.reconnectAttempts, duration)
+		if r := math.Mod(float64(ws.reconnectAttempts), 10); r == 0 {
+			ws.reconnectInterval += 10
+		}
+		ws.connection <- false
 		return
 	}
 
-	ws.conn = conn
-	ws.available = true
+	if ws.reconnectAttempts == 0 {
+		fmt.Println("Realtime connected")
+	} else {
+		fmt.Printf("Realtime connected after %d attemps\n", ws.reconnectAttempts)
+	}
 
+	ws.reconnectAttempts = 1
+	ws.conn = conn
 	go ws.readPump()
 }
 
 func (ws *WebSocketConnection) readPump() {
 	defer func() {
 		ws.conn.Close()
-		ws.available = false
+		ws.connection <- false
 	}()
 
 	ws.conn.SetReadLimit(maxMessageSize)
@@ -54,13 +70,13 @@ func (ws *WebSocketConnection) readPump() {
 	ws.conn.SetPongHandler(func(string) error { ws.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
 	for {
-		if !ws.available {
+		if ws.conn == nil {
 			break
 		}
 
 		_, message, err := ws.conn.ReadMessage()
 		if err != nil {
-			ws.available = false
+			ws.connection <- false
 			break
 		}
 
@@ -80,10 +96,10 @@ func (ws *WebSocketConnection) readPump() {
 	}
 }
 
-// Init initialize web socket connection
+// Init initialize realtime connection
 func Init(code, serviceType, host string, port int) error {
 	if ws != nil && ws.dialer != nil {
-		return fmt.Errorf("socket already initilized")
+		return fmt.Errorf("realtime already initilized")
 	}
 
 	payload := make(map[string]interface{})
@@ -97,13 +113,15 @@ func Init(code, serviceType, host string, port int) error {
 	}
 
 	ws = &WebSocketConnection{
-		code:        code,
-		serviceType: serviceType,
-		host:        host,
-		port:        port,
-		token:       tokenString,
-		messages:    make(chan *Message, 100),
-		shutdown:    false,
+		code:              code,
+		serviceType:       serviceType,
+		host:              host,
+		port:              port,
+		token:             tokenString,
+		messages:          make(chan *Message, 100),
+		connection:        make(chan bool, 1),
+		reconnectInterval: 5,
+		reconnectAttempts: 0,
 	}
 
 	ws.dialer = &websocket.Dialer{
@@ -112,39 +130,23 @@ func Init(code, serviceType, host string, port int) error {
 		},
 	}
 
-	ws.connect()
+	go handleConnection(ws.connection)
+	ws.connection <- false
 	return nil
 }
 
-// HandleReconnection deal with all actions to keep connection up
-func HandleReconnection(interval int) {
-	if ws.available {
-		fmt.Println("Realtime connected")
-	}
-
-	attempts := 1
-	for {
-		if !ws.available && !ws.shutdown {
-			if r := math.Mod(float64(attempts), 10); r == 0 {
-				interval += 10
-			}
-			duration := time.Duration(interval) * time.Second
-			time.Sleep(duration)
-			fmt.Printf("Realtime trying to connect (attempt: %d | interval: %s)\n", attempts, duration)
+// handleConnection deal with all actions to keep connection up
+func handleConnection(conn <-chan bool) {
+	for status := range conn {
+		if !status {
 			ws.connect()
-			if ws.available {
-				fmt.Printf("Realtime connected after %d attemps\n", attempts)
-				attempts = 1
-				continue
-			}
-			attempts++
 		}
 	}
 }
 
-// Emit emit to the web socket server a message
+// Emit send to the realtime server a message
 func Emit(message Message) error {
-	if !ws.available {
+	if ws.conn != nil {
 		return fmt.Errorf("no available connections")
 	}
 
@@ -155,7 +157,7 @@ func Emit(message Message) error {
 
 	err = ws.conn.WriteMessage(websocket.TextMessage, jsonByte)
 	if err != nil {
-		ws.available = false
+		ws.connection <- false
 	}
 
 	return err
@@ -166,18 +168,17 @@ func MessagesChannel() <-chan *Message {
 	return ws.messages
 }
 
-// Available returns if redis client is available
+// Available returns if realtime connection is available
 func Available() bool {
-	return ws.available
+	return ws.conn != nil
 }
 
-// Close web socket connection
+// Close realtime connection
 func Close() {
-	ws.shutdown = true
 	if ws.conn != nil {
 		ws.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 		ws.conn.Close()
 	}
 	close(ws.messages)
-	ws.available = false
+	close(ws.connection)
 }
