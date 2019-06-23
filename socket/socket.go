@@ -35,12 +35,13 @@ func (ws *WebSocketConnection) connect() {
 	conn, _, err := ws.dialer.Dial(url, http.Header{"Authorization": []string{ws.token}})
 	if ws.reconnectAttempts == 0 {
 		fmt.Println("Realtime connecting...")
+		ws.reconnectAttempts++
 	}
 	if err != nil {
 		duration := time.Duration(ws.reconnectInterval) * time.Second
 		time.Sleep(duration)
-		ws.reconnectAttempts++
 		fmt.Printf("Realtime trying to connect (attempt: %d | interval: %s)\n", ws.reconnectAttempts, duration)
+		ws.reconnectAttempts++
 		if r := math.Mod(float64(ws.reconnectAttempts), 10); r == 0 {
 			ws.reconnectInterval += 10
 		}
@@ -51,7 +52,7 @@ func (ws *WebSocketConnection) connect() {
 	if ws.reconnectAttempts == 0 {
 		fmt.Println("Realtime connected")
 	} else {
-		fmt.Printf("Realtime connected after %d attemps\n", ws.reconnectAttempts)
+		fmt.Printf("Realtime connected after %d attemps\n", ws.reconnectAttempts-1)
 	}
 
 	ws.reconnectAttempts = 1
@@ -60,15 +61,6 @@ func (ws *WebSocketConnection) connect() {
 }
 
 func (ws *WebSocketConnection) readPump() {
-	defer func() {
-		ws.conn.Close()
-		ws.connection <- false
-	}()
-
-	ws.conn.SetReadLimit(maxMessageSize)
-	ws.conn.SetReadDeadline(time.Now().Add(pongWait))
-	ws.conn.SetPongHandler(func(string) error { ws.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
-
 	for {
 		if ws.conn == nil {
 			break
@@ -92,7 +84,6 @@ func (ws *WebSocketConnection) readPump() {
 		default:
 			fmt.Println("[socket]readPump: message channel full. discarding message")
 		}
-
 	}
 }
 
@@ -129,7 +120,6 @@ func Init(code, serviceType, host string, port int) error {
 			InsecureSkipVerify: true,
 		},
 	}
-
 	go handleConnection(ws.connection)
 	ws.connection <- false
 	return nil
@@ -139,6 +129,7 @@ func Init(code, serviceType, host string, port int) error {
 func handleConnection(conn <-chan bool) {
 	for status := range conn {
 		if !status {
+
 			ws.connect()
 		}
 	}
