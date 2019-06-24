@@ -90,6 +90,9 @@ func handleConnection(conn <-chan bool) {
 
 // Available returns if redis client is available
 func Available() bool {
+	if rdb == nil || rdb.client == nil {
+		return false
+	}
 	return rdb.client.Ping().Val() == "PONG"
 }
 

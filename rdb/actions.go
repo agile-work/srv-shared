@@ -12,7 +12,7 @@ func BRPopLPush(source, destination string, timeout time.Duration) error {
 
 // LPush insert all the specified values at the head of the list stored at key
 func LPush(key string, values ...interface{}) error {
-	err := rdb.client.LPush(key, values).Err()
+	err := rdb.client.LPush(key, values...).Err()
 	rdb.connectionRefused(err)
 	return err
 }
@@ -28,6 +28,21 @@ func LPop(key string) (string, error) {
 // If key does not exist, it is interpreted as an empty list and 0 is returned.
 func LLen(key string) (int64, error) {
 	res, err := rdb.client.LLen(key).Result()
+	rdb.connectionRefused(err)
+	return res, err
+}
+
+// LRange Returns the specified elements of the list stored at key.
+// The offsets start and stop are zero-based indexes, with 0 being
+// the first element of the list (the head of the list), 1 being the next element and so on.
+func LRange(key string, start, stop int64) ([]string, error) {
+	res, err := rdb.client.LRange(key, start, stop).Result()
+	rdb.connectionRefused(err)
+	return res, err
+}
+
+func LRem(key string, count int64, value interface{}) (int64, error) {
+	res, err := rdb.client.LRem(key, count, value).Result()
 	rdb.connectionRefused(err)
 	return res, err
 }

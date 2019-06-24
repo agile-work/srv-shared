@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -17,6 +18,17 @@ type Service struct {
 	PID          int       `json:"pid"`
 	ConnectedAt  time.Time `json:"connected_at"`
 	Uptime       string    `json:"uptime"`
+}
+
+// JSON returns service as a json byte array
+func (s *Service) JSON() []byte {
+	jsonBytes, _ := json.Marshal(s)
+	return jsonBytes
+}
+
+// URL returns host:port
+func (s *Service) URL() string {
+	return fmt.Sprintf("%s:%d", s.Host, s.Port)
 }
 
 // GetUptime calculates service uptime

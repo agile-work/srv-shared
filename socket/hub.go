@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"strings"
 	"time"
 
 	"github.com/agile-work/srv-shared/util"
@@ -53,6 +54,23 @@ func (h *Hub) Run() {
 				client.Close()
 			}
 		case message := <-h.messages:
+			servicesRecipients := []string{}
+			for _, id := range message.Recipients {
+				if strings.HasPrefix(id, "service.") {
+					for _, client := range h.clients {
+						if strings.HasSuffix(id, strings.ToLower(client.serviceData.Name)) {
+							servicesRecipients = append(servicesRecipients, client.id)
+						}
+					}
+				}
+			}
+
+			for _, id := range servicesRecipients {
+				if client, ok := h.clients[id]; ok {
+					client.inbox <- message
+				}
+			}
+
 			if len(message.Recipients) <= len(h.clients) {
 				for _, id := range message.Recipients {
 					if client, ok := h.clients[id]; ok {

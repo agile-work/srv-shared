@@ -102,6 +102,7 @@ const (
 	// Service types
 	ServiceTypeModule    string = "mdl"
 	ServiceTypeAuxiliary string = "aux"
+	ServiceTypeAPI       string = "api"
 
 	// System parameters
 	SysParamAPIHost          string = "api_host"

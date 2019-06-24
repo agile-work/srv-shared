@@ -40,7 +40,6 @@ func (ws *WebSocketConnection) connect() {
 		ws.reconnectAttempts++
 	}
 	if err != nil {
-		fmt.Println(err)
 		duration := time.Duration(ws.reconnectInterval) * time.Second
 		time.Sleep(duration)
 		fmt.Printf("Realtime trying to connect (attempt: %d | interval: %s)\n", ws.reconnectAttempts, duration)
@@ -71,12 +70,15 @@ func (ws *WebSocketConnection) readPump() {
 
 		_, message, err := ws.conn.ReadMessage()
 		if err != nil {
-			ws.connection <- false
+			select {
+			case ws.connection <- false:
+			default:
+			}
 			break
 		}
 
 		msg := Message{}
-		err = json.Unmarshal(message, &msg)
+		err = json.Unmarshal(message, &msg.Data)
 		if err != nil {
 			fmt.Println("[socket]readPump: error unmarshaling message")
 			continue
@@ -139,7 +141,7 @@ func handleConnection(conn <-chan bool) {
 
 // Emit send to the realtime server a message
 func Emit(message Message) error {
-	if ws.conn != nil {
+	if ws.conn == nil {
 		return fmt.Errorf("no available connections")
 	}
 
