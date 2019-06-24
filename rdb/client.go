@@ -76,11 +76,11 @@ func Init(host string, port int, pass string) {
 		reconnectAttempts: 0,
 	}
 
-	go handleReconnection(rdb.connection)
+	go handleConnection(rdb.connection)
 	rdb.connection <- false
 }
 
-func handleReconnection(conn <-chan bool) {
+func handleConnection(conn <-chan bool) {
 	for status := range conn {
 		if !status {
 			rdb.connect()
