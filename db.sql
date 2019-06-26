@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS core_groups_users CASCADE;
 DROP TABLE IF EXISTS core_schemas CASCADE;
 DROP TABLE IF EXISTS core_sch_followers CASCADE;
 DROP TABLE IF EXISTS core_schemas_modules CASCADE;
-DROP TABLE IF EXISTS core_lookups CASCADE;
+DROP TABLE IF EXISTS core_datasets CASCADE;
 DROP TABLE IF EXISTS core_lkp_options CASCADE;
 DROP TABLE IF EXISTS core_sch_fields CASCADE;
 DROP TABLE IF EXISTS core_sch_fld_validations CASCADE;
@@ -231,7 +231,7 @@ CREATE TABLE core_schemas_modules (
   UNIQUE(schema_id, module_id)
 );
 
-CREATE TABLE core_lookups (
+CREATE TABLE core_datasets (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
   type CHARACTER VARYING NOT NULL,

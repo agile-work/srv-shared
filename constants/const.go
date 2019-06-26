@@ -6,6 +6,7 @@ const (
 	InstancesTablePrefix string = "cst_"
 
 	// Tables
+	TableCoreDatasets                      string = "core_datasets"
 	TableCoreTrees                         string = "core_trees"
 	TableCoreTreeLevels                    string = "core_tree_levels"
 	TableCoreTreeUnits                     string = "core_tree_units"
@@ -133,15 +134,15 @@ const (
 	SecurityPermissionScopeGroupUnit string = "group_unit"
 	SecurityPermissionScopeUnit      string = "unit"
 
-	// Lookup types
-	LookupDynamic string = "dynamic"
-	LookupStatic  string = "static"
+	// Dataset types
+	DatasetDynamic string = "dynamic"
+	DatasetStatic  string = "static"
 
-	// Fields Lookup types
-	FieldLookupStatic   string = "static"
-	FieldLookupDynamic  string = "dynamic"
-	FieldLookupTree     string = "tree"
-	FieldLookupSecurity string = "security"
+	// Fields Dataset types
+	FieldDatasetStatic   string = "static"
+	FieldDatasetDynamic  string = "dynamic"
+	FieldDatasetTree     string = "tree"
+	FieldDatasetSecurity string = "security"
 
 	// Data type
 	SQLDataTypeText   string = "text"
