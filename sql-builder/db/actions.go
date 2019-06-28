@@ -23,6 +23,10 @@ func (o *Options) AddOrderBy(builder builder.Builder) {
 }
 
 func (o *Options) AddCondition(condition builder.Builder) {
+	if o.Conditions == nil {
+		o.Conditions = condition
+		return
+	}
 	o.Conditions = builder.And(
 		o.Conditions,
 		condition,

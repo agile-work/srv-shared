@@ -137,6 +137,7 @@ const (
 	// Dataset types
 	DatasetDynamic string = "dynamic"
 	DatasetStatic  string = "static"
+	DatasetSchema  string = "schema"
 
 	// Fields Dataset types
 	FieldDatasetStatic   string = "static"
