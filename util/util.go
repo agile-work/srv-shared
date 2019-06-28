@@ -1,6 +1,8 @@
 package util
 
 import (
+	"database/sql"
+	"encoding/json"
 	"strings"
 
 	"github.com/agile-work/srv-shared/constants"
@@ -49,4 +51,38 @@ func GetSystemParams() (map[string]string, error) {
 	}
 
 	return params, nil
+}
+
+// RowToMap transform a db row to map
+func RowToMap(row *sql.Rows) (map[string]interface{}, error) {
+	cols, err := row.Columns()
+	if err != nil {
+		return nil, err
+	}
+
+	columns := make([]interface{}, len(cols))
+	columnPointers := make([]interface{}, len(cols))
+	for i := range columns {
+		columnPointers[i] = &columns[i]
+	}
+
+	if err := row.Scan(columnPointers...); err != nil {
+		return nil, err
+	}
+
+	rowMap := make(map[string]interface{})
+	for i, column := range cols {
+		val := columnPointers[i].(*interface{})
+		if source, ok := columns[i].([]byte); ok {
+			var raw json.RawMessage
+			if err := json.Unmarshal(source, &raw); err != nil {
+				return nil, err
+			}
+			rowMap[column] = raw
+		} else {
+			rowMap[column] = *val
+		}
+	}
+
+	return rowMap, nil
 }
