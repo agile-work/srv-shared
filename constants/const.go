@@ -139,11 +139,11 @@ const (
 	DatasetStatic  string = "static"
 	DatasetSchema  string = "schema"
 
-	// Fields Dataset types
-	FieldDatasetStatic   string = "static"
-	FieldDatasetDynamic  string = "dynamic"
-	FieldDatasetTree     string = "tree"
-	FieldDatasetSecurity string = "security"
+	// Fields Lookup types
+	FieldLookupStatic   string = "static"
+	FieldLookupDynamic  string = "dynamic"
+	FieldLookupTree     string = "tree"
+	FieldLookupSecurity string = "security"
 
 	// Data type
 	SQLDataTypeText   string = "text"
