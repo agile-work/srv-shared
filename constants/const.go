@@ -145,6 +145,9 @@ const (
 	FieldLookupTree     string = "tree"
 	FieldLookupSecurity string = "security"
 
+	// Fields number display
+	FieldNumberDisplayMoney string = "money"
+
 	// Data type
 	SQLDataTypeText   string = "text"
 	SQLDataTypeDate   string = "date"
