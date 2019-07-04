@@ -1,46 +1,4 @@
 DROP TABLE IF EXISTS core_users CASCADE;
-DROP TABLE IF EXISTS core_instance_premissions CASCADE;
-DROP TABLE IF EXISTS core_user_notifications CASCADE;
-DROP TABLE IF EXISTS core_user_notification_emails CASCADE;
-DROP TABLE IF EXISTS core_trees CASCADE;
-DROP TABLE IF EXISTS core_tree_levels CASCADE;
-DROP TABLE IF EXISTS core_tree_units CASCADE;
-DROP TABLE IF EXISTS core_currencies CASCADE;
-DROP TABLE IF EXISTS core_cry_rates CASCADE;
-DROP TABLE IF EXISTS core_config_languages CASCADE;
-DROP TABLE IF EXISTS core_group_permissions CASCADE;
-DROP TABLE IF EXISTS core_groups_users CASCADE;
-DROP TABLE IF EXISTS core_schemas CASCADE;
-DROP TABLE IF EXISTS core_sch_followers CASCADE;
-DROP TABLE IF EXISTS core_schemas_modules CASCADE;
-DROP TABLE IF EXISTS core_datasets CASCADE;
-DROP TABLE IF EXISTS core_lkp_options CASCADE;
-DROP TABLE IF EXISTS core_sch_fields CASCADE;
-DROP TABLE IF EXISTS core_sch_fld_validations CASCADE;
-DROP TABLE IF EXISTS core_widgets CASCADE;
-DROP TABLE IF EXISTS core_sch_pages CASCADE;
-DROP TABLE IF EXISTS core_sch_views CASCADE;
-DROP TABLE IF EXISTS core_views_pages CASCADE;
-DROP TABLE IF EXISTS core_sch_pag_sections CASCADE;
-DROP TABLE IF EXISTS core_sch_pag_sec_tabs CASCADE;
-DROP TABLE IF EXISTS core_sch_pag_cnt_structures CASCADE;
-DROP TABLE IF EXISTS core_translations CASCADE;
-DROP TABLE IF EXISTS core_jobs CASCADE;
-DROP TABLE IF EXISTS core_jobs_followers CASCADE;
-DROP TABLE IF EXISTS core_job_tasks CASCADE;
-DROP TABLE IF EXISTS core_job_instances CASCADE;
-DROP TABLE IF EXISTS core_job_task_instances CASCADE;
-DROP TABLE IF EXISTS core_services CASCADE;
-DROP TABLE IF EXISTS core_system_params CASCADE;
-
-DROP VIEW IF EXISTS core_v_user_groups CASCADE;
-DROP VIEW IF EXISTS core_v_group_users CASCADE;
-DROP VIEW IF EXISTS core_v_users_and_groups CASCADE;
-DROP VIEW IF EXISTS core_v_sch_modules CASCADE;
-DROP VIEW IF EXISTS core_v_job_followers CASCADE;
-DROP VIEW IF EXISTS core_v_job_instance CASCADE;
-DROP VIEW IF EXISTS core_v_job_task_instance CASCADE;
-DROP VIEW IF EXISTS core_v_fields_by_permission CASCADE;
 
 CREATE TABLE core_users (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
@@ -62,25 +20,9 @@ CREATE TABLE core_users (
   UNIQUE(username)
 );
 
-CREATE TABLE core_instance_premissions (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  user_id CHARACTER VARYING NOT NULL,
-  instance_id CHARACTER VARYING NOT NULL,
-  instance_type CHARACTER VARYING NOT NULL,
-  source_type CHARACTER VARYING NOT NULL, -- manual or field
-  source_id CHARACTER VARYING, -- null or field_id
-  permissions JSONB DEFAULT '[]'::JSONB NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(user_id, instance_id)
-);
-
 CREATE TABLE core_user_notifications (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  user_id CHARACTER VARYING NOT NULL,
+  username CHARACTER VARYING NOT NULL,
   structure_id CHARACTER VARYING NOT NULL,
   structure_type CHARACTER VARYING NOT NULL,
   message_action CHARACTER VARYING NOT NULL,
@@ -95,7 +37,7 @@ CREATE TABLE core_user_notifications (
 
 CREATE TABLE core_user_notification_emails (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  user_id CHARACTER VARYING NOT NULL,
+  username CHARACTER VARYING NOT NULL,
   structure_id CHARACTER VARYING NOT NULL,
   structure_type CHARACTER VARYING NOT NULL,
   message_action CHARACTER VARYING NOT NULL,
@@ -190,33 +132,23 @@ CREATE TABLE core_groups (
 );
 
 CREATE TABLE core_schemas (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  job_id CHARACTER VARYING,
-  code CHARACTER VARYING NOT NULL,
-  module BOOLEAN DEFAULT FALSE NOT NULL,
-  active BOOLEAN DEFAULT FALSE NOT NULL,
-  status CHARACTER VARYING DEFAULT 'processing' NOT NULL,
-  parent_id CHARACTER VARYING,
-  is_extension BOOLEAN,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
+  id character varying NOT NULL DEFAULT uuid_generate_v1(),
+  code character varying NOT NULL,
+  name jsonb DEFAULT '{}'::jsonb,
+  description jsonb DEFAULT '{}'::jsonb,
+  module boolean NOT NULL DEFAULT false, -- 
+  prefixo character varying,
+  is_extension boolean,
+  active boolean NOT NULL DEFAULT false,
+  status character varying NOT NULL DEFAULT 'processing'::character varying,
+  followers jsonb DEFAULT '[]'::jsonb,
+  created_by character varying NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  updated_by character varying NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
+  parent_id character varying,
   PRIMARY KEY(id),
   UNIQUE(code)
-);
-
-CREATE TABLE core_sch_followers (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,	
-  schema_id CHARACTER VARYING NOT NULL,
-  schema_instance_id CHARACTER VARYING NOT NULL,
-  user_id CHARACTER VARYING NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(schema_id, schema_instance_id, user_id)
 );
 
 CREATE TABLE core_schemas_modules (
@@ -266,130 +198,20 @@ CREATE TABLE core_schema_fields (
   UNIQUE(schema_code, code)
 );
 
-CREATE TABLE core_widgets (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  code CHARACTER VARYING NOT NULL,
-  query CHARACTER VARYING NOT NULL,
-  widget_type CHARACTER VARYING NOT NULL,
-  active BOOLEAN DEFAULT FALSE NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(code)
-);
-
-CREATE TABLE core_sch_pages (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  code CHARACTER VARYING NOT NULL,
-  schema_id CHARACTER VARYING NOT NULL,
-  page_type CHARACTER VARYING NOT NULL,
-  active BOOLEAN DEFAULT FALSE NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(schema_id, code)
-);
-
-CREATE TABLE core_sch_views (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  code CHARACTER VARYING NOT NULL,
-  schema_id CHARACTER VARYING NOT NULL,
-  active BOOLEAN DEFAULT FALSE NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(schema_id, code)
-);
-
-CREATE TABLE core_views_pages (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  view_id CHARACTER VARYING NOT NULL,
-  page_id CHARACTER VARYING NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(view_id, page_id)
-);
-
-CREATE TABLE core_sch_pag_sections (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  code CHARACTER VARYING NOT NULL,
-  schema_id CHARACTER VARYING NOT NULL,
-  page_id CHARACTER VARYING NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(schema_id, page_id, code)
-);
-
-CREATE TABLE core_sch_pag_sec_tabs (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  code CHARACTER VARYING NOT NULL,
-  schema_id CHARACTER VARYING NOT NULL,
-  page_id CHARACTER VARYING NOT NULL,
-  section_id CHARACTER VARYING NOT NULL,
-  tab_order integer NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(schema_id, page_id, section_id, code)
-);
-
-CREATE TABLE core_sch_pag_cnt_structures ( -- core_sch_pag_containers_structures
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  schema_id CHARACTER VARYING NOT NULL,
-  page_id CHARACTER VARYING NOT NULL,
-  container_id CHARACTER VARYING NOT NULL,
-  container_type CHARACTER VARYING NOT NULL,
-  structure_id CHARACTER VARYING NOT NULL,
-  structure_type CHARACTER VARYING NOT NULL,
-  position_row integer NOT NULL,
-  position_column integer NOT NULL,
-  width integer NOT NULL,
-  height integer NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(schema_id, page_id, container_id, container_type, structure_id, structure_type)
-);
-
-CREATE TABLE core_translations (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  structure_type CHARACTER VARYING NOT NULL,
-  structure_id CHARACTER VARYING NOT NULL,
-  structure_field CHARACTER VARYING NOT NULL,
-  value CHARACTER VARYING NOT NULL,
-  language_code CHARACTER VARYING NOT NULL,
-  replicated BOOLEAN DEFAULT FALSE NOT NULL,
-  PRIMARY KEY(id),
-  UNIQUE(structure_type, structure_id, structure_field, language_code)
-);
-
 CREATE TABLE core_jobs (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  code CHARACTER VARYING,
-  job_type CHARACTER VARYING NOT NULL, --system, user
-  parameters JSONB,
-  exec_timeout INTEGER NOT NULL DEFAULT 60,
-  active BOOLEAN DEFAULT FALSE NOT NULL,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
+  id character varying NOT NULL DEFAULT uuid_generate_v4(),
+  code character varying NOT NULL,
+  name jsonb DEFAULT '{}'::jsonb,
+  description jsonb DEFAULT '{}'::jsonb,
+  job_type character varying NOT NULL, --system, user
+  parameters jsonb DEFAULT '[]'::jsonb,
+  followers jsonb DEFAULT '[]'::jsonb,
+  exec_timeout integer NOT NULL DEFAULT 60,
+  active boolean NOT NULL DEFAULT false,
+  created_by character varying NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  updated_by character varying NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
   PRIMARY KEY(id),
   UNIQUE(code)
 );
@@ -408,74 +230,73 @@ CREATE TABLE core_jobs_followers (
 );
 
 CREATE TABLE core_job_tasks (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  code CHARACTER VARYING,
-  job_id CHARACTER VARYING NOT NULL,
-  task_sequence INTEGER NOT NULL DEFAULT 0,  
-  exec_timeout INTEGER NOT NULL DEFAULT 60,
-  parent_id CHARACTER VARYING NOT NULL,
-  parameters JSONB,
-  exec_action CHARACTER VARYING NOT NULL, --exec_query, api_post, api_get, api_delete, api_patch
-  exec_address CHARACTER VARYING NOT NULL, --/api/v1/schema/{parent_id}/page
-  exec_payload CHARACTER VARYING,
-  action_on_fail CHARACTER VARYING NOT NULL, --continue, retry_and_continue, cancel, retry_and_cancel, rollback, retry_and_rollback
-  max_retry_attempts INTEGER DEFAULT 2,
-  rollback_action CHARACTER VARYING, --drop table, api_delete
-  rollback_address CHARACTER VARYING, --/api/v1/schema/{parent_id}/fields/{field_id}
-  rollback_payload CHARACTER VARYING,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
+  id character varying NOT NULL DEFAULT uuid_generate_v4(),
+  code character varying,
+  job_code character varying NOT NULL,
+  task_sequence integer NOT NULL DEFAULT 0,
+  exec_timeout integer NOT NULL DEFAULT 60,
+  parent_code character varying NOT NULL,
+  parameters jsonb,
+  exec_action character varying NOT NULL, --exec_query, api_post, api_get, api_delete, api_patch
+  exec_address character varying NOT NULL, --/api/v1/schema/{parent_id}/page
+  exec_payload character varying,
+  action_on_fail character varying NOT NULL, --continue, retry_and_continue, cancel, retry_and_cancel, rollback, retry_and_rollback
+  max_retry_attempts integer DEFAULT 2,
+  rollback_action character varying, --drop table, api_delete
+  rollback_address character varying, --/api/v1/schema/{parent_id}/fields/{field_id}
+  rollback_payload character varying,
+  created_by character varying NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  updated_by character varying NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
   PRIMARY KEY(id),
-  UNIQUE(job_id, code)
+  UNIQUE(job_code, code)
 );
 
 CREATE TABLE core_job_instances (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  code CHARACTER VARYING NOT NULL,
-  job_id CHARACTER VARYING NOT NULL,
-  service_id CHARACTER VARYING,
-  exec_timeout INTEGER NOT NULL DEFAULT 60,
-  parameters JSONB,
-  status CHARACTER VARYING NOT NULL,
-  start_at TIMESTAMPTZ,
-  finish_at TIMESTAMPTZ,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
+  id character varying NOT NULL DEFAULT uuid_generate_v1(),
+  job_code character varying NOT NULL
+  service_id character varying,
+  exec_timeout integer NOT NULL DEFAULT 60,
+  parameters jsonb DEFAULT '[]'::jsonb,
+  status character varying NOT NULL,
+  start_at timestamp with time zone,
+  finish_at timestamp with time zone,
+  created_by character varying NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  updated_by character varying NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
+  queue_at timestamp with time zone,
   PRIMARY KEY(id)
 );
 
 CREATE TABLE core_job_task_instances (
-  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
-  job_instance_id CHARACTER VARYING NOT NULL,
-  task_id CHARACTER VARYING NOT NULL,
-  code CHARACTER VARYING NOT NULL,
-  status CHARACTER VARYING NOT NULL, -- created, processing, concluded, warning, fail
-  start_at TIMESTAMPTZ,
-  finish_at TIMESTAMPTZ,
-  task_sequence INTEGER NOT NULL DEFAULT 0,
-  exec_timeout INTEGER NOT NULL DEFAULT 60,
-  parent_id CHARACTER VARYING NOT NULL,
-  parameters JSONB,
-  exec_action CHARACTER VARYING NOT NULL, --exec_query, api_post, api_get, api_delete, api_patch
-  exec_address CHARACTER VARYING NOT NULL, --/api/v1/schema/{parent_id}/page
-  exec_payload CHARACTER VARYING NOT NULL,
-  exec_response CHARACTER VARYING,
-  action_on_fail CHARACTER VARYING NOT NULL, --continue, retry_and_continue, cancel, retry_and_cancel, rollback, retry_and_rollback
-  max_retry_attempts INTEGER DEFAULT 2,
-  rollback_action CHARACTER VARYING, --drop table, api_delete
-  rollback_address CHARACTER VARYING, --/api/v1/schema/{parent_id}/fields/{field_id}
-  rollback_payload CHARACTER VARYING,
-  rollback_response CHARACTER VARYING,
-  created_by CHARACTER VARYING NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_by CHARACTER VARYING NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL,
+  id character varying NOT NULL DEFAULT uuid_generate_v1(),
+  job_instance_id character varying NOT NULL,
+  task_code character varying NOT NULL,
+  status character varying NOT NULL, -- created, processing, concluded, warning, fail
+  start_at timestamp with time zone,
+  finish_at timestamp with time zone,
+  task_sequence integer NOT NULL DEFAULT 0,
+  exec_timeout integer NOT NULL DEFAULT 60,
+  parent_code character varying NOT NULL,
+  parameters jsonb DEFAULT '[]'::jsonb,
+  exec_action character varying NOT NULL, --exec_query, api_post, api_get, api_delete, api_patch
+  exec_address character varying NOT NULL, --/api/v1/schema/{parent_id}/page
+  exec_payload character varying NOT NULL,
+  exec_response character varying,
+  action_on_fail character varying NOT NULL, --continue, retry_and_continue, cancel, retry_and_cancel, rollback, retry_and_rollback
+  max_retry_attempts integer DEFAULT 2,
+  rollback_action character varying, --drop table, api_delete
+  rollback_address character varying, --/api/v1/schema/{parent_id}/fields/{field_id}
+  rollback_payload character varying,
+  rollback_response character varying,
+  created_by character varying NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  updated_by character varying NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
   PRIMARY KEY(id),
-  UNIQUE(job_instance_id, task_id)
+  UNIQUE(job_instance_id, task_code)
 );
 
 CREATE TABLE core_services (
@@ -809,9 +630,9 @@ VALUES (
 INSERT INTO core_jobs VALUES ('97273448-0600-4987-96e9-796ae54c3409', 'job_system_create_schema', 'system', '[{"key": "schema_id"}, {"key": "schema_code"}]', 60, true, '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 16:23:55.546555+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:12:21.364253+00');
 INSERT INTO core_jobs VALUES ('1dc914d8-dbdf-4b21-8755-4034bf01feac', 'job_system_delete_schema', 'system', '[{"key": "schema_id"}]', 60, true, '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:23:15.04792+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:23:15.04792+00');
 
-INSERT INTO core_job_tasks VALUES ('2b4c21fc-df29-499d-a544-b78152f5d1e2', 'sf0002', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, 'af65df49-e270-4dcd-a45a-13179c2b4fc8', 'null', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/containers/{task.section.id}/section/structures', '{"schema_id":"{job.schema_id}","page_id":"{task.page.id}","container_id":"{task.section.id}","container_type":"section","structure_type":"field","structure_id":"{task.field02.id}","position_row":0,"position_column":0,"width":0,"height":0}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:20:33.887723+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:20:33.887723+00');
-INSERT INTO core_job_tasks VALUES ('af65df49-e270-4dcd-a45a-13179c2b4fc8', 'section', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, 'a2cffeb8-2aa8-4092-98c5-cab52fd6d397', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/sections', '{"name":"Geral","code":"general","description":"descrição da sessão","schema_id":"{job.schema_id}","page_id":"{task.page.id}"}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:22:47.72088+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:42:49.659137+00');
-INSERT INTO core_job_tasks VALUES ('6647f5e9-f1b7-4e41-8cea-c38a744a3678', 'create_table', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, '', 'null', 'exec_query', 'local', 'CREATE TABLE cst_{job.schema_code} (
+INSERT INTO core_job_tasks VALUES ('2b4c21fc-df29-499d-a544-b78152f5d1e2', 'sf0002', 'job_system_create_schema', 0, 60, 'af65df49-e270-4dcd-a45a-13179c2b4fc8', 'null', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/containers/{task.section.id}/section/structures', '{"schema_id":"{job.schema_id}","page_id":"{task.page.id}","container_id":"{task.section.id}","container_type":"section","structure_type":"field","structure_id":"{task.field02.id}","position_row":0,"position_column":0,"width":0,"height":0}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:20:33.887723+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:20:33.887723+00');
+INSERT INTO core_job_tasks VALUES ('af65df49-e270-4dcd-a45a-13179c2b4fc8', 'section', 'job_system_create_schema', 0, 60, 'a2cffeb8-2aa8-4092-98c5-cab52fd6d397', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/sections', '{"name":"Geral","code":"general","description":"descrição da sessão","schema_id":"{job.schema_id}","page_id":"{task.page.id}"}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:22:47.72088+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:42:49.659137+00');
+INSERT INTO core_job_tasks VALUES ('6647f5e9-f1b7-4e41-8cea-c38a744a3678', 'create_table', 'job_system_create_schema', 0, 60, '', 'null', 'exec_query', 'local', 'CREATE TABLE cst_{job.schema_code} (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   data JSONB DEFAULT '[]'::JSONB NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
@@ -820,14 +641,14 @@ INSERT INTO core_job_tasks VALUES ('6647f5e9-f1b7-4e41-8cea-c38a744a3678', 'crea
   updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY(id)
 );', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 16:27:14.492063+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-16 12:47:26.594925+00');
-INSERT INTO core_job_tasks VALUES ('3b25010f-4e50-4b91-84d4-6b0d19f1c3ae', 'schema', '97273448-0600-4987-96e9-796ae54c3409', 3, 60, '', 'null', 'api_patch', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}', '{"status": "completed"}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-16 13:35:23.655347+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-16 13:38:11.749239+00');
-INSERT INTO core_job_tasks VALUES ('a2cffeb8-2aa8-4092-98c5-cab52fd6d397', 'page', '97273448-0600-4987-96e9-796ae54c3409', 2, 60, '', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages', '{"name":"Geral","code":"pag_general","description":"Descrição da página","schema_id":"{job.schema_id}","page_type":"form","active":true}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 17:15:59.672439+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:23:40.063537+00');
-INSERT INTO core_job_tasks VALUES ('c26fdc64-7726-4d6b-aea6-20bb8f9f5a51', 'field01', '97273448-0600-4987-96e9-796ae54c3409', 1, 60, '', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/fields', '{"name":"Nome","code":"name","description":"descrição do campo nome","schema_id":"{job.schema_id}","field_type":"text","lookup_id":"","multivalue":false,"active":true}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 17:07:24.85265+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:46:21.110233+00');
-INSERT INTO core_job_tasks VALUES ('5a774097-ca92-4244-9467-b53d66d9c1ec', 'field02', '97273448-0600-4987-96e9-796ae54c3409', 1, 60, '', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/fields', '{"name":"Código","code":"code","description":"descrição do código","schema_id":"{job.schema_id}","field_type":"text","lookup_id":"","multivalue":false,"active":true}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 16:59:18.560389+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:46:49.070556+00');
-INSERT INTO core_job_tasks VALUES ('22ed3aa5-d41d-47a4-ba93-ce097446b883', 'get_schema', '1dc914d8-dbdf-4b21-8755-4034bf01feac', 0, 60, '', '[{"key": "schema_code", "type": "self", "field": "data.code"}]', 'api_get', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}', '', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:53:54.257669+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:14:49.758612+00');
-INSERT INTO core_job_tasks VALUES ('74c1d6c0-82d7-44d1-aa9e-4b26b2031947', 'sf0001', '97273448-0600-4987-96e9-796ae54c3409', 0, 60, 'af65df49-e270-4dcd-a45a-13179c2b4fc8', 'null', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/containers/{task.section.id}/section/structures', '{"schema_id":"{job.schema_id}","page_id":"{task.page.id}","container_id":"{task.section.id}","container_type":"section","structure_type":"field","structure_id":"{task.field01.id}","position_row":0,"position_column":0,"width":0,"height":0}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:40:06.424041+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:02:33.694846+00');
-INSERT INTO core_job_tasks VALUES ('ace1845b-bf32-467e-aa3a-98fc5131063e', 'delete_table', '1dc914d8-dbdf-4b21-8755-4034bf01feac', 0, 60, '22ed3aa5-d41d-47a4-ba93-ce097446b883', 'null', 'exec_query', 'local', 'DROP TABLE IF EXISTS cst_{task.get_schema.schema_code};', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:25:48.27173+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:24:42.702444+00');
-INSERT INTO core_job_tasks VALUES ('6ddde82d-25b1-49cd-ba18-37d4d067bbcc', 'delete_schema', '1dc914d8-dbdf-4b21-8755-4034bf01feac', 1, 60, '', 'null', 'api_delete', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}', '', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:02:03.659126+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:14:33.18574+00');
+INSERT INTO core_job_tasks VALUES ('3b25010f-4e50-4b91-84d4-6b0d19f1c3ae', 'schema', 'job_system_create_schema', 3, 60, '', 'null', 'api_patch', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}', '{"status": "completed"}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-16 13:35:23.655347+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-16 13:38:11.749239+00');
+INSERT INTO core_job_tasks VALUES ('a2cffeb8-2aa8-4092-98c5-cab52fd6d397', 'page', 'job_system_create_schema', 2, 60, '', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages', '{"name":"Geral","code":"pag_general","description":"Descrição da página","schema_id":"{job.schema_id}","page_type":"form","active":true}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 17:15:59.672439+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:23:40.063537+00');
+INSERT INTO core_job_tasks VALUES ('c26fdc64-7726-4d6b-aea6-20bb8f9f5a51', 'field01', 'job_system_create_schema', 1, 60, '', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/fields', '{"name":"Nome","code":"name","description":"descrição do campo nome","schema_id":"{job.schema_id}","field_type":"text","lookup_id":"","multivalue":false,"active":true}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 17:07:24.85265+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:46:21.110233+00');
+INSERT INTO core_job_tasks VALUES ('5a774097-ca92-4244-9467-b53d66d9c1ec', 'field02', 'job_system_create_schema', 1, 60, '', '[{"key": "id", "type": "self", "field": "data.id"}]', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/fields', '{"name":"Código","code":"code","description":"descrição do código","schema_id":"{job.schema_id}","field_type":"text","lookup_id":"","multivalue":false,"active":true}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 16:59:18.560389+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 19:46:49.070556+00');
+INSERT INTO core_job_tasks VALUES ('22ed3aa5-d41d-47a4-ba93-ce097446b883', 'get_schema', 'job_system_delete_schema', 0, 60, '', '[{"key": "schema_code", "type": "self", "field": "data.code"}]', 'api_get', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}', '', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:53:54.257669+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:14:49.758612+00');
+INSERT INTO core_job_tasks VALUES ('74c1d6c0-82d7-44d1-aa9e-4b26b2031947', 'sf0001', 'job_system_create_schema', 0, 60, 'af65df49-e270-4dcd-a45a-13179c2b4fc8', 'null', 'api_post', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}/pages/{task.page.id}/containers/{task.section.id}/section/structures', '{"schema_id":"{job.schema_id}","page_id":"{task.page.id}","container_id":"{task.section.id}","container_type":"section","structure_type":"field","structure_id":"{task.field01.id}","position_row":0,"position_column":0,"width":0,"height":0}', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-14 18:40:06.424041+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:02:33.694846+00');
+INSERT INTO core_job_tasks VALUES ('ace1845b-bf32-467e-aa3a-98fc5131063e', 'delete_table', 'job_system_delete_schema', 0, 60, '22ed3aa5-d41d-47a4-ba93-ce097446b883', 'null', 'exec_query', 'local', 'DROP TABLE IF EXISTS cst_{task.get_schema.schema_code};', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 18:25:48.27173+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:24:42.702444+00');
+INSERT INTO core_job_tasks VALUES ('6ddde82d-25b1-49cd-ba18-37d4d067bbcc', 'delete_schema', 'job_system_delete_schema', 1, 60, '', 'null', 'api_delete', '{system.api_host}/api/v1/core/admin/schemas/{job.schema_id}', '', 'continue', 0, '', '', '', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:02:03.659126+00', '307e481c-69c5-11e9-96a0-06ea2c43bb20', '2019-05-18 19:14:33.18574+00');
 
 CREATE OR REPLACE FUNCTION trg_func_replic_translations() RETURNS TRIGGER AS $$
   DECLARE
