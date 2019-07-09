@@ -107,11 +107,12 @@ const (
 	ServiceTypeAPI       string = "api"
 
 	// System parameters
-	SysParamAPIHost          string = "api_host"
-	SysParamAPILoginURL      string = "api_login_url"
-	SysParamAPILoginEmail    string = "api_login_email"
-	SysParamAPILoginPassword string = "api_login_password"
-	SysParamLanguageCode     string = "language_code"
+	SysParamAPIHost             string = "api_host"
+	SysParamAPILoginURL         string = "api_login_url"
+	SysParamAPILoginEmail       string = "api_login_email"
+	SysParamAPILoginPassword    string = "api_login_password"
+	SysParamAPIUsername         string = "api_username"
+	SysParamDefaultLanguageCode string = "default_language_code"
 
 	// Notifications email delivery
 	NotificationsEmailAlways   string = "always"
