@@ -6,6 +6,10 @@ const (
 	InstancesTablePrefix string = "cst_"
 
 	// Tables
+	TableCoreBPM                           string = "core_bpm"
+	TableCoreBPMSteps                      string = "core_bpm_steps"
+	TableCoreBPMInstances                  string = "core_bpm_instances"
+	TableCoreBPMInstancesSteps             string = "core_bpm_instance_steps"
 	TableCoreContents                      string = "core_contents"
 	TableCoreDatasets                      string = "core_datasets"
 	TableCoreTrees                         string = "core_trees"
