@@ -19,6 +19,59 @@ DROP TABLE IF EXISTS core_user_notification_emails CASCADE;
 
 DROP VIEW IF EXISTS core_v_group_users CASCADE;
 
+CREATE TABLE core_bpm (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  code CHARACTER VARYING NOT NULL,
+  content_code CHARACTER VARYING,
+  schema_code CHARACTER VARYING,
+  name JSONB DEFAULT '{}'::JSONB NOT NULL,
+  description JSONB DEFAULT '{}'::JSONB NOT NULL,
+  active BOOLEAN DEFAULT FALSE NOT NULL,
+  created_by CHARACTER VARYING NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_by CHARACTER VARYING NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY(id),
+  UNIQUE(code)
+);
+
+CREATE TABLE core_bpm_steps (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  code CHARACTER VARYING NOT NULL,
+  bpm_code CHARACTER VARYING NOT NULL,
+  name JSONB DEFAULT '{}'::JSONB NOT NULL,
+  definitions JSONB DEFAULT '{}'::JSONB NOT NULL,
+  created_by CHARACTER VARYING NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_by CHARACTER VARYING NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY(id),
+  UNIQUE(code)
+);
+
+CREATE TABLE core_bpm_instances (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  bpm_code CHARACTER VARYING NOT NULL,
+  status CHARACTER VARYING DEFAULT "waiting" NOT NULL,
+  created_by CHARACTER VARYING NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  start_at TIMESTAMPTZ,
+  end_at TIMESTAMPTZ,
+  PRIMARY KEY(id),
+  UNIQUE(code)
+);
+
+CREATE TABLE core_bpm_instance_steps (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  bpm_step_code CHARACTER VARYING NOT NULL,
+  bpm_instance_code CHARACTER VARYING NOT NULL,
+  definitions JSONB DEFAULT '{}'::JSONB NOT NULL,
+  status CHARACTER VARYING DEFAULT "waiting" NOT NULL,
+  start_at TIMESTAMPTZ,
+  end_at TIMESTAMPTZ,
+  PRIMARY KEY(id)
+);
+
 CREATE TABLE core_contents (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
