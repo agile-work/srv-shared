@@ -6,6 +6,7 @@ const (
 	InstancesTablePrefix string = "cst_"
 
 	// Tables
+	TableCoreContents                      string = "core_contents"
 	TableCoreDatasets                      string = "core_datasets"
 	TableCoreTrees                         string = "core_trees"
 	TableCoreTreeLevels                    string = "core_tree_levels"
