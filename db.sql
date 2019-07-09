@@ -151,6 +151,7 @@ INSERT INTO core_config_languages (
 CREATE TABLE core_trees (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
+  content_code CHARACTER VARYING,
   name JSONB DEFAULT '{}'::JSONB NOT NULL,
   description JSONB DEFAULT '{}'::JSONB NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
@@ -179,6 +180,7 @@ CREATE TABLE core_tree_levels (
 CREATE TABLE core_tree_units (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
+  content_code CHARACTER VARYING,
   name JSONB DEFAULT '{}'::JSONB NOT NULL,
   description JSONB DEFAULT '{}'::JSONB NOT NULL,
   tree_code CHARACTER VARYING NOT NULL,
@@ -212,6 +214,7 @@ CREATE TABLE core_currencies (
 CREATE TABLE core_groups (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
+  content_code CHARACTER VARYING,
   name JSONB DEFAULT '{}'::JSONB NOT NULL,
   description JSONB DEFAULT '{}'::JSONB NOT NULL,
   tree_unit_id CHARACTER VARYING,
@@ -231,6 +234,7 @@ CREATE TABLE core_groups (
 CREATE TABLE core_datasets (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
+  content_code CHARACTER VARYING,
   type CHARACTER VARYING NOT NULL,
   name JSONB DEFAULT '{}'::JSONB NOT NULL,
   description JSONB DEFAULT '{}'::JSONB NOT NULL,
@@ -299,6 +303,7 @@ CREATE TABLE core_schemas (
 CREATE TABLE core_schema_fields (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
+  content_code CHARACTER VARYING,
   schema_code CHARACTER VARYING NOT NULL,
   field_type CHARACTER VARYING NOT NULL,
   name JSONB DEFAULT '{}'::JSONB NOT NULL,
@@ -450,7 +455,7 @@ INSERT INTO core_job_tasks (
   '[]',
   'exec_query',
   'local',
-  $$CREATE TABLE cst_{job.schema_code} (
+  $$CREATE TABLE {job.schema_code} (
     id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
     data JSONB DEFAULT '[]'::JSONB NOT NULL,
     created_by CHARACTER VARYING NOT NULL,
@@ -730,6 +735,42 @@ INSERT INTO core_system_params (
   updated_by,
   updated_at
 ) VALUES (
+  'e004a2ca-7981-11e9-a8f0-06ea2c43bb20',
+  'api_username',
+  'admin',
+  'admin',
+  '2019-05-17 21:26:51.191108+00',
+  'admin',
+  '2019-05-17 21:26:51.191108+00'
+);
+
+INSERT INTO core_system_params (
+  id,
+  param_key,
+  param_value,
+  created_by,
+  created_at,
+  updated_by,
+  updated_at
+) VALUES (
+  'f004a2ca-7981-11e9-a8f0-06ea2c43bb20',
+  'default_language_code',
+  'pt-br',
+  'admin',
+  '2019-05-17 21:26:51.191108+00',
+  'admin',
+  '2019-05-17 21:26:51.191108+00'
+);
+
+INSERT INTO core_system_params (
+  id,
+  param_key,
+  param_value,
+  created_by,
+  created_at,
+  updated_by,
+  updated_at
+) VALUES (
   'd03101d0-7981-11e9-a8f1-06ea2c43bb20',
   'api_login_password',
   '123456',
@@ -750,7 +791,7 @@ INSERT INTO core_system_params (
 ) VALUES (
   'cb2b2330-78f2-11e9-8f87-06ea2c43bb20',
   'api_login_url',
-  '/api/v1/core/admin/login',
+  '/api/v1/core/auth/login',
   'admin',
   '2019-05-17 21:26:51.191108+00',
   'admin',
