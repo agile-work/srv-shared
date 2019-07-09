@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS core_users CASCADE;
+DROP TABLE IF EXISTS core_contents CASCADE;
 DROP TABLE IF EXISTS core_config_languages CASCADE;
 DROP TABLE IF EXISTS core_trees CASCADE;
 DROP TABLE IF EXISTS core_tree_levels CASCADE;
@@ -244,7 +245,6 @@ CREATE TABLE core_datasets (
 );
 
 INSERT INTO core_datasets (
-  id,
   code,
   type,
   name,
@@ -256,22 +256,29 @@ INSERT INTO core_datasets (
   updated_by,
   updated_at
 ) VALUES (
-  '4b34b08e-9e99-11e9-81c6-06ea2c43bb20',
-  'ds_currencies',
+  'ds_sys_contents',
   'dynamic',
-  '{"pt-br": "Lista de moedas ativas"}',
-  '{"pt-br": "Lista de moedas ativas"}',
-  '{"query": "select code, value as name from core_currencies, lateral jsonb_each_text(name) where active = true and key = {{param:user:language}}", "fields": [{"code": "code", "label": "code", "security": {"field_code": "", "schema_code": ""}, "data_type": "text", "field_type": "field"}, {"code": "name", "label": "name", "security": {"field_code": "", "schema_code": ""}, "data_type": "text", "field_type": "field"}], "created_at": "2019-07-04T17:21:22.838384568-03:00", "created_by": "admin", "updated_at": "2019-07-04T20:04:10.455163656-03:00", "updated_by": "admin"}',
+  '{"pt-br": "Lista de conteúdos"}',
+  '{"pt-br": "Lista de conteúdos"}',
+  '{
+    "query": "select code, value as name from core_contents, lateral jsonb_each_text(name) where key = {{param:user:language}}", 
+    "fields": [{"code": "code", "label": "code", "data_type": "text"}, {"code": "name", "label": "name", "data_type": "text"}], 
+    "created_at": "2019-09-09 16:23:55.546555+00", 
+    "created_by": "admin", 
+    "updated_at": "2019-09-09 16:23:55.546555+00", 
+    "updated_by": "admin"}'::JSONB,
   true,
   'admin',
-  '2019-07-04 20:21:22.838385+00',
+  current_timestamp,
   'admin',
-  '2019-07-04 23:04:10.455164+00'
+  current_timestamp
 );
+
 
 CREATE TABLE core_schemas (
   id CHARACTER VARYING NOT NULL DEFAULT uuid_generate_v1(),
   code CHARACTER VARYING NOT NULL,
+  content_code CHARACTER VARYING,
   name JSONB DEFAULT '{}'::JSONB NOT NULL,
   description JSONB DEFAULT '{}'::JSONB NOT NULL,
   module BOOLEAN NOT NULL DEFAULT false,
