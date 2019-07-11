@@ -8,27 +8,19 @@ import (
 
 // Transaction is an database transaction.
 type Transaction struct {
-	Tx         *sql.Tx
-	statements []*builder.Statement
-}
-
-// Add new statement to be executed
-func (t *Transaction) Add(statement *builder.Statement) {
-	t.statements = append(t.statements, statement)
+	Tx *sql.Tx
 }
 
 // Exec executes a query that doesn't return rows. For example: an INSERT and UPDATE.
-func (t *Transaction) Exec() error {
-	for _, s := range t.statements {
+func (t *Transaction) Exec(statements ...*builder.Statement) error {
+	for _, s := range statements {
 		str, vals := s.Query()
 		_, err := t.Tx.Exec(str, vals...)
 		if err != nil {
-			t.Tx.Rollback()
 			printQueryIfError(err, str, vals)
 			return err
 		}
 	}
-	t.Tx.Commit()
 	return nil
 }
 
