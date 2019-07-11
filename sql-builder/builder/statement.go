@@ -70,6 +70,14 @@ func (s *Statement) Prepare(q Query) error {
 
 func prepareRaw(s *Statement, q Query) error {
 	q.WriteString(s.RawQuery)
+
+	if s.WhereCond != nil {
+		err := s.WhereCond.Prepare(q)
+		if err != nil {
+			return err
+		}
+	}
+
 	q.WriteValue(s.Data...)
 	return nil
 }

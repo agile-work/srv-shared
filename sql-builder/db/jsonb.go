@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 
@@ -46,29 +47,25 @@ func UpdateStructToJSON(instanceID, column, table string, object interface{}) er
 	return err
 }
 
-// UpdateStructToJSONArray update an existing object in the json array column
-func UpdateStructToJSONArray(jsonObjectID, instanceID, column, table string, object interface{}) error {
-	jsonBytes, err := json.Marshal(object)
+// UpdateJSONAttributeTx update or insert if not exist value in the json column attribute
+func UpdateJSONAttributeTx(tx *sql.Tx, table, column, path, value interface{}, condition builder.Builder) error {
+	jsonBytes, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
 
-	sql := fmt.Sprintf(`WITH data_object as ( select index-1 as obj_index from %s ,jsonb_array_elements(%s) with ordinality arr(obj, index)
-			where ((obj->>'id') = '%s') and (id = '%s')
-		)
-		update %s set %s = jsonb_set(
+	sql := fmt.Sprintf(`update %s set %s = jsonb_set(
 		%s,
-		('{'||data_object.obj_index||'}') ::text[],
-		%s::jsonb#>('{'||data_object.obj_index||'}')::text[] || '%s',
+		('%s') ::text[],
+		'%s',
 		true
-		) from data_object
-		where (id = '%s')`, table, column, jsonObjectID, instanceID, table, column, column, column, string(jsonBytes), instanceID)
+		)`, table, column, column, path, string(jsonBytes))
 
-	statement := builder.Raw(sql)
+	statement := builder.Raw(sql).Where(condition)
 	query := builder.NewQuery()
 	statement.Prepare(query)
 
-	_, err = db.Exec(query.String(), query.Value()...)
+	_, err = tx.Exec(query.String(), query.Value()...)
 	return err
 }
 

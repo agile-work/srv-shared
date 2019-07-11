@@ -10,6 +10,16 @@ import (
 	"github.com/agile-work/srv-shared/sql-builder/db"
 )
 
+// Remove an item from a slice
+func Remove(slice []string, match string) []string {
+	for i, v := range slice {
+		if v == match {
+			return append(slice[:i], slice[i+1:]...)
+		}
+	}
+	return slice
+}
+
 // Contains check if slice contains string
 func Contains(slice []string, match ...string) bool {
 	if slice == nil || len(match) == 0 {
