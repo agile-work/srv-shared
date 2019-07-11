@@ -16,6 +16,7 @@ type Statement struct {
 	Data          []interface{}
 	ReturnColumns []string
 	JSONColumns   map[string][]string
+	JSONHandler   []Builder
 	JSONObject    string
 	JSONWhereCond Builder
 	RawQuery      string
@@ -222,6 +223,18 @@ func prepareUpdate(s *Statement, q Query) error {
 			jsonCol := fmt.Sprintf("%s = jsonb_set(%s::jsonb,'{%s}'::text[],(?)::jsonb, true)", column, column, fields[0])
 			q.WriteString(jsonCol)
 			i++
+		}
+	}
+
+	if len(s.JSONHandler) > 0 {
+		if len(s.Columns) > 0 {
+			q.WriteString(", ")
+		}
+		for i, jsonHandler := range s.JSONHandler {
+			if i > 0 {
+				q.WriteString(", ")
+			}
+			jsonHandler.Prepare(q)
 		}
 	}
 
