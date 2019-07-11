@@ -25,6 +25,8 @@ func InsertStructToJSON(column, table string, object interface{}, conditions bui
 	statement.Prepare(query)
 
 	_, err = db.Exec(query.String(), query.Value()...)
+	printQueryIfError(err, query.String(), query.Value())
+
 	return err
 }
 
@@ -44,6 +46,8 @@ func UpdateStructToJSON(instanceID, column, table string, object interface{}) er
 	statement.Prepare(query)
 
 	_, err = db.Exec(query.String(), query.Value()...)
+	printQueryIfError(err, query.String(), query.Value())
+
 	return err
 }
 
@@ -66,6 +70,8 @@ func UpdateJSONAttributeTx(tx *sql.Tx, table, column, path, value interface{}, c
 	statement.Prepare(query)
 
 	_, err = tx.Exec(query.String(), query.Value()...)
+	printQueryIfError(err, query.String(), query.Value())
+
 	return err
 }
 
@@ -85,5 +91,7 @@ func DeleteStructFromJSON(jsonObjectID, instanceID, column, table string) error 
 	statement.Prepare(query)
 
 	_, err := db.Exec(query.String(), query.Value()...)
+	printQueryIfError(err, query.String(), query.Value())
+
 	return err
 }
