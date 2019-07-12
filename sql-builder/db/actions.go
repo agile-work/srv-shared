@@ -18,10 +18,12 @@ type Options struct {
 	Offset     int
 }
 
+// AddOrderBy add order to option to be used in a query
 func (o *Options) AddOrderBy(builder builder.Builder) {
 	o.OrderBy = append(o.OrderBy, builder)
 }
 
+// AddCondition add conditions to option to be used in a query
 func (o *Options) AddCondition(condition builder.Builder) {
 	if o.Conditions == nil {
 		o.Conditions = condition
@@ -117,22 +119,16 @@ func InsertStructTx(tx *sql.Tx, table string, model interface{}, fields ...strin
 
 // UpdateStruct update struct values in the database table
 func UpdateStruct(table string, model interface{}, opt *Options, fields ...string) error {
-	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), opt)
-	if err != nil {
-		return err
-	}
-	_, err = db.Exec(query, values...)
+	query, values := StructUpdateQuery(table, model, strings.Join(fields, ","), opt)
+	_, err := db.Exec(query, values...)
 	printQueryIfError(err, query, values)
 	return err
 }
 
 // UpdateStructTx update struct values in the database table
 func UpdateStructTx(tx *sql.Tx, table string, model interface{}, opt *Options, fields ...string) error {
-	query, values, err := StructUpdateQuery(table, model, strings.Join(fields, ","), opt)
-	if err != nil {
-		return err
-	}
-	_, err = tx.Exec(query, values...)
+	query, values := StructUpdateQuery(table, model, strings.Join(fields, ","), opt)
+	_, err := tx.Exec(query, values...)
 	printQueryIfError(err, query, values)
 	return err
 }

@@ -187,10 +187,9 @@ func StructUpdateStatement(table string, obj interface{}, updatableFields string
 }
 
 // StructUpdateQuery generates the update query based on the struct fields
-// TODO: retirar o retorno de erro
-func StructUpdateQuery(table string, obj interface{}, updatableFields string, opt *Options) (string, []interface{}, error) {
+func StructUpdateQuery(table string, obj interface{}, updatableFields string, opt *Options) (string, []interface{}) {
 	str, vals := StructUpdateStatement(table, obj, updatableFields, opt).Query()
-	return str, vals, nil
+	return str, vals
 }
 
 // StructDeleteQuery generates the delete query based on the struct fields
