@@ -163,6 +163,10 @@ const (
 	SQLDataTypeNumber string = "number"
 	SQLDataTypeBool   string = "bool"
 
+	// Group types
+	GroupTypeGlobal string = "global"
+	GroupTypeTree   string = "tree"
+
 	// Time in seconds
 	Year  int64 = 12 * Month
 	Month int64 = 30 * Day
