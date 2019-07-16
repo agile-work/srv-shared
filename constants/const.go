@@ -9,6 +9,7 @@ const (
 	DatabaseMaxLength int = 45
 
 	// Tables
+	TableCoreModules                       string = "core_modules"
 	TableCoreBPM                           string = "core_bpm"
 	TableCoreBPMSteps                      string = "core_bpm_steps"
 	TableCoreBPMInstances                  string = "core_bpm_instances"

@@ -72,6 +72,24 @@ CREATE TABLE core_bpm_instance_steps (
   PRIMARY KEY(id)
 );
 
+CREATE TABLE core_modules (
+  id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
+  code CHARACTER VARYING NOT NULL,
+  prefix CHARACTER VARYING NOT NULL,
+  version CHARACTER VARYING NOT NULL,
+  name JSONB DEFAULT '{}'::JSONB NOT NULL,
+  description JSONB DEFAULT '{}'::JSONB NOT NULL,
+  definitions JSONB DEFAULT '{}'::JSONB,
+  is_system BOOLEAN DEFAULT FALSE NOT NULL,
+  active BOOLEAN DEFAULT FALSE NOT NULL,
+  created_by CHARACTER VARYING NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_by CHARACTER VARYING NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY(id),
+  UNIQUE(code)
+);
+
 CREATE TABLE core_contents (
   id CHARACTER VARYING DEFAULT uuid_generate_v1() NOT NULL,
   code CHARACTER VARYING NOT NULL,
@@ -338,6 +356,7 @@ CREATE TABLE core_schemas (
   name JSONB DEFAULT '{}'::JSONB NOT NULL,
   description JSONB DEFAULT '{}'::JSONB NOT NULL,
   module BOOLEAN NOT NULL DEFAULT false,
+  modules JSONB DEFAULT '[]'::JSONB,
   prefixo CHARACTER VARYING,
   is_extension BOOLEAN,
   active BOOLEAN NOT NULL DEFAULT false,
