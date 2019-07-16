@@ -256,8 +256,6 @@ CREATE TABLE core_tree_units (
   description JSONB DEFAULT '{}'::JSONB NOT NULL,
   tree_code CHARACTER VARYING NOT NULL,
   path LTREE NOT NULL,
-  permission_scope CHARACTER VARYING,
-  permissions JSONB DEFAULT '[]'::JSONB NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,

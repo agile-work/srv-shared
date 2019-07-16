@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/agile-work/srv-shared/sql-builder/builder"
 )
@@ -63,7 +64,7 @@ func UpdateJSONAttributeTx(tx *sql.Tx, table, column, path, value interface{}, c
 		('%s') ::text[],
 		'%s',
 		true
-		)`, table, column, column, path, string(jsonBytes))
+		)`, table, column, column, path, strings.Replace(string(jsonBytes), "'", "''", -1))
 
 	statement := builder.Raw(sql).Where(condition)
 	query := builder.NewQuery()
