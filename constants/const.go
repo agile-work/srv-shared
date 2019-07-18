@@ -174,4 +174,10 @@ const (
 	Week  int64 = 604800
 	Day   int64 = 86400
 	Hour  int64 = 3600
+
+	// Module features modes
+	ModelFeatureModeMasterSchema    string = "master_schema"
+	ModelFeatureModeSchemaSubObject string = "schema_subobject"
+	ModelFeatureModeSchemaField     string = "schema_field"
+	ModelFeatureModeField           string = "model_field"
 )
