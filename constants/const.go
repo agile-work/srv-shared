@@ -180,4 +180,14 @@ const (
 	ModelFeatureModeSchemaSubObject string = "schema_subobject"
 	ModelFeatureModeSchemaField     string = "schema_field"
 	ModelFeatureModeField           string = "model_field"
+
+	// Module status
+	ModuleStatusRegistered string = "registered"
+	ModuleStatusInstalling string = "installing"
+	ModuleStatusReady      string = "ready"
+	ModuleStatusFail       string = "fail"
+
+	// Module instance mode
+	ModuleInstanceModeTemporary  string = "temporary"
+	ModuleInstanceModePersistent string = "persistent"
 )
