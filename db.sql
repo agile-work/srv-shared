@@ -98,6 +98,7 @@ CREATE TABLE core_contents (
   name JSONB DEFAULT '{}'::JSONB NOT NULL,
   description JSONB DEFAULT '{}'::JSONB NOT NULL,
   is_system BOOLEAN DEFAULT FALSE NOT NULL,
+  is_module BOOLEAN DEFAULT FALSE NOT NULL,
   active BOOLEAN DEFAULT FALSE NOT NULL,
   created_by CHARACTER VARYING NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
@@ -974,7 +975,7 @@ CREATE OR REPLACE FUNCTION trg_func_replic_job_task_to_instances() RETURNS TRIGG
     WHERE
       job_code = NEW.job_code;
 
-    UPDATE core_job_instances SET status = 'created', updated_at = NOW() WHERE id = NEW.id;
+    UPDATE core_job_instances SET status = 'created', updated_at = NOW() WHERE id = NEW.id and id != job_code;
     RETURN NEW;
   END;
 $$ LANGUAGE plpgsql;

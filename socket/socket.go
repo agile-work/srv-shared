@@ -95,7 +95,7 @@ func (ws *WebSocketConnection) readPump() {
 // Init initialize realtime connection
 func Init(service *service.Service, host string, port int) error {
 	if ws != nil && ws.dialer != nil {
-		return fmt.Errorf("realtime already initilized")
+		return fmt.Errorf("realtime already initialized")
 	}
 
 	payload := make(map[string]interface{})
